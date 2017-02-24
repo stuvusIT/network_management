@@ -1,0 +1,30 @@
+# vim: sw=4 ts=4 ft=conf
+# {{ ansible_managed }}
+
+auto lo
+iface lo inet loopback
+
+{% for interface in bridges %}
+{% if interface.dhcp | default(False) %}
+auto {{ interface.name }}
+iface {{ interface.name }} inet dhcp
+
+{% elif interface.static is defined %}
+auto {{ interface.name }}
+iface {{ interface.name }} inet static
+	address {{ interface.static | ipaddr('address') }}
+	network {{ interface.static | ipaddr('network') }}
+	netmask {{ interface.static | ipaddr('netmask') }}
+	broadcast {{ interface.static | ipaddr('broadcast') }}
+{% if interface.gateway is defined %}
+	gateway {{interface.gateway}}
+{% endif %}
+{% if interface.search is defined %}
+	dns-search {{interface.search}}
+{% endif %}
+{% if interface.nameservers is defined %}
+	dns-nameservers {% for nameserver in interface.nameservers %}{{ nameserver }} {% endfor %}
+{% endif %}
+
+{% endif %}
+{% endfor %}
