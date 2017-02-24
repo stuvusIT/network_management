@@ -1,46 +1,7 @@
 ---
-- name: create simple openvswitch bridges
-  openvswitch_bridge:
-    bridge: "{{ item.name }}"
-    state: present
-  with_items: "{{ bridges }}"
-  when: "item.parent is undefined"
-
-- name: create vlan openvswitch bridges
-  openvswitch_bridge:
-    bridge: "{{ item.name }}"
-    state: present
-    parent: "{{ item.parent}}"
-    vlan: "{{ item.vlan }}"
-  with_items: "{{ bridges }}"
-  when: "item.parent is defined"
-
-- name: configure simple openvswitch ports
-  openvswitch_port:
-    bridge: "{{ item.0.name }}"
-    port: "{{ item.1.port }}"
-    state: present
-  with_subelements:
-    - "{{ bridges }}"
-    - ports
-    - skip_missing: True
-  when: "item.1.vlan is undefined"
-
 - name: debian network configuration
   template:
     backup: no
     dest: /etc/network/interfaces
     src: files/interfaces
   when: "ansible_os_family=='Debian'"
-
-- name: configure openvswitch vlan ports
-  openvswitch_port:
-    bridge: "{{ item.0.name }}"
-    port: "{{ item.1.port }}"
-    tag: "{{ item.1.tag }}"
-    state: present
-  with_subelements:
-    - "{{ bridges }}"
-    - ports
-    - skip_missing: True
-  when: "item.1.vlan is defined"

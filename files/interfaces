@@ -5,12 +5,18 @@ auto lo
 iface lo inet loopback
 
 {% for interface in bridges %}
-{% if interface.dhcp | default(False) %}
-auto {{ interface.name }}
-iface {{ interface.name }} inet dhcp
+{% for port in interface.ports | default({}) %}
+auto {{ port.port }}
+iface {{ port.port }} inet manual
 
-{% elif interface.static is defined %}
+{% endfor %}
+{% endfor %}
+
+{% for interface in bridges %}
 auto {{ interface.name }}
+{% if interface.dhcp | default(False) %}
+iface {{ interface.name }} inet dhcp
+{% elif interface.static is defined %}
 iface {{ interface.name }} inet static
 	address {{ interface.static | ipaddr('address') }}
 	network {{ interface.static | ipaddr('network') }}
@@ -24,7 +30,20 @@ iface {{ interface.name }} inet static
 {% endif %}
 {% if interface.nameservers is defined %}
 	dns-nameservers {% for nameserver in interface.nameservers %}{{ nameserver }} {% endfor %}
-{% endif %}
 
 {% endif %}
+{% else %}
+iface {{ interface.name }} inet manual
+{% endif %}
+	pre-up    ovs-vsctl --may-exist add-br {{ interface.name }} {% if interface.parent is defined %} {{ interface.parent }} {{ interface.vlan }} {% endif %}
+
+{% for port in interface.ports | default({}) %}
+	post-up   ovs-vsctl --may-exist add-port {{ interface.name }} {{ port.port }} {% if port.vlan is defined %} tag={{ port.vlan }} {% endif %}
+
+{% endfor %}
+{% for port in interface.ports | default({}) %}
+	pre-down  ovs-vsctl --if-exists del-port {{ interface.name }} {{ port.port }}
+{% endfor %}
+	post-down ovs-vsctl --if-exists del-br {{ interface.name }}
+
 {% endfor %}
