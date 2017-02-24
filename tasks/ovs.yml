@@ -1,9 +1,0 @@
----
-- name: configure uplink
-  openvswitch_bridge:
-    bridge: uplink
-- name: configure uplink old_laptop vlan
-  openvswitch_bridge:
-    bridge: old_laptop
-    parent: uplink
-    vlan: 351
