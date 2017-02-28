@@ -1,4 +1,4 @@
-# vim: sw=4 ts=4 ft=conf
+# vim: sw=4 ts=4 ft=jinja
 # {{ ansible_managed }}
 
 auto lo
