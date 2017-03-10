@@ -1,9 +1,7 @@
 ---
 - name: install required packages
   apt:
-    install_recommends: yes
     name: "{{ item }}"
-    state: latest
   with_items:
     - openvswitch-switch
     - openvswitch-common
