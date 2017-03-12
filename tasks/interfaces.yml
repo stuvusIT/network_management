@@ -1,22 +1,17 @@
 ---
-- name: debian network configuration
+- name: Configure Debian networking
   template:
-    backup: no
+    src: interfaces.j2
     dest: /etc/network/interfaces
-    src: files/interfaces
-  when: "ansible_os_family=='Debian'"
+  when: ansible_os_family == "Debian"
 
-- name: restart machine
+- name: Restart Firewall
   shell: sleep 2 && shutdown -r now "Ansible updates triggered"
   async: 1
   poll: 0
   ignore_errors: true
 
-- name: test
-  debug:
-    msg: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-
-- name: waiting for server to come back
+- name: Wait for server to come back online
   wait_for:
     host: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
     delay: 30
