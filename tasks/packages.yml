@@ -2,6 +2,7 @@
 - name: install required packages
   apt:
     name: "{{ item }}"
+    update_cache: yes
   with_items:
     - openvswitch-switch
     - openvswitch-common
