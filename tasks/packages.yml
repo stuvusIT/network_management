@@ -1,8 +1,12 @@
 ---
-- name: install required packages
+- name: Update repositories cache
+  apt:
+    update_cache: yes
+  changed_when: false
+  
+- name: install openvswitch packages
   apt:
     name: "{{ item }}"
-    update_cache: yes
   with_items:
     - openvswitch-switch
     - openvswitch-common
