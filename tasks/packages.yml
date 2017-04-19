@@ -4,7 +4,7 @@
     update_cache: yes
   changed_when: false
   
-- name: install openvswitch packages
+- name: Install openvswitch packages
   apt:
     name: "{{ item }}"
   with_items:
