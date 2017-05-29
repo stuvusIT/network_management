@@ -42,7 +42,7 @@ iface {{ interface.name }} inet manual
 	pre-up    ovs-vsctl --may-exist add-br {{ interface.name }}{% if interface.parent is defined %} {{ interface.parent }} {{ interface.vlan }}{% endif %}
 
 {% for port in interface.ports | default({}) %}
-	pre-up   ovs-vsctl --may-exist add-port {{ interface.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}
+	pre-up    ovs-vsctl --may-exist add-port {{ interface.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}
 
 {% endfor %}
 {% if interface.post_up is defined %}

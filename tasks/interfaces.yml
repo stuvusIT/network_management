@@ -6,5 +6,4 @@
   when: ansible_os_family == "Debian"
   notify: Reboot firewall
 
-- name: Flush Handlers
-  meta: flush_handlers
+- meta: flush_handlers
