@@ -18,7 +18,7 @@ the following variables are used from all host or group vars(not only from hosts
 #allow https(443) traffic internally between all servers(which take use of following option) and the reverse proxy.
 served_domains:
   - domains:
-    - domain: <domain name> #these values are currently ignored by this role(the role only checks if served_domains is defined or not)
+    - <domain name> #these values are currently ignored by this role(the role only checks if served_domains is defined or not)
     ...
   ...
 
