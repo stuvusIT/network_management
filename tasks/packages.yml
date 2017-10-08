@@ -3,7 +3,7 @@
   apt:
     update_cache: yes
   changed_when: false
-  
+
 - name: Install openvswitch packages
   apt:
     name: "{{ item }}"
