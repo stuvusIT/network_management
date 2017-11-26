@@ -5,6 +5,7 @@
   poll: 0
   ignore_errors: true
   notify: Wait for server to come back online
+  when: firewall_reboot_for_netconfig
 
 - name: Wait for server to come back online
   wait_for:
@@ -14,3 +15,4 @@
     port: 22
   delegate_to: localhost
   become: false
+  when: firewall_reboot_for_netconfig

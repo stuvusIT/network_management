@@ -63,6 +63,13 @@ iface {{ interface.name }} inet static
 {% endif %}{% endfor %}{% endif %}
 
 {% endfor %}
+{% if patch_field is defined %}
 
-post-up /sbin/iptables-restore <"/root/test.iptables"
-	post-up /sbin/sysctl -w net.ipv4.ip_forward=1
+{% for patch_field_dev_in, patch_field_dev_out in patch_field.iteritems() %}
+post-up ovs-vsctl {{''
+	-}} --may-exist add-port {{ patch_field_dev_in }} {{ patch_field_dev_in }}_patch_{{ loop.index }} -- {{''
+	-}} set interface {{ patch_field_dev_in }}_patch_{{ loop.index }} type=patch options:peer={{ patch_field_dev_out }}_patch_{{ loop.index }} -- {{''
+	-}} --may-exist add-port {{ patch_field_dev_out }} {{ patch_field_dev_out }}_patch_{{ loop.index }} -- {{''
+	-}} set interface {{ patch_field_dev_out }}_patch_{{ loop.index }} type=patch options:peer={{ patch_field_dev_in }}_patch_{{ loop.index }}; true
+{% endfor %}
+{% endif %}
