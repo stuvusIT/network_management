@@ -1,9 +1,0 @@
----
-- name: install required packages
-  apt:
-    name: "{{ item }}"
-  with_items:
-    - openvswitch-switch
-    - openvswitch-common
-    - iptables
-    - ferm

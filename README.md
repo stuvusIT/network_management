@@ -1,58 +1,66 @@
-# firewall
+# network_managment
 
-Configures a Debian server as firewall and gateway server. Rules are either auto generated from all group and host vars, at your inventory or specified at 'template/main.ferm'.
+This role configures your network interfaces automatically. This role also support complex setups with openvswitch and different vlans. On debian based systems a proper `/etc/network/interfaces` configuration is generated unless `network_managment_allways_script` is set to `True`.
 
 
 ## Requirements
 
+A Linux distribution, with debian networking support or systemd as init system.
 
 
 ## Role Variables
-the following variables are only used from host and group vars, where this role does apply:
-```yml
-reverse_proxy: <primary host(ip) oder ansible hostname, where all https and http traffic should be forrwarded too>
-```
 
-the following variables are used from all host or group vars(not only from hosts where this role does apply):
-```yml
-#allow https(443) traffic internally between all servers(which take use of following option) and the reverse proxy.
-served_domains:
-  - domains:
-    - <domain name> #these values are currently ignored by this role(the role only checks if served_domains is defined or not)
-    ...
-  ...
+### Primary
+| Option                                   | Type                         | Default | Description                                                                                                                                        | Required |
+|------------------------------------------|------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|
+| network_managment_allways_script         | boolean                      | `False` | Generate a systemd service and network management script always (disable networking.service if exist)                                              |     N    |
+| network_managment_default_type           | [string](#type)              | `dhcp`  | Default type to setup a interface or bridge                                                                                                        |     N    |
+| network_managment_default_dhcp_options   | [dict](#dhcp)                | `{}`    | Additional options for dhcp interfaces                                                                                                             |     N    |
+| network_managment_default_static_options | [dict](#static)              | `{}`    | Defines how a static interface should be setup                                                                                                     |     N    |
+| interfaces                               | [list of dicts](#interfaces) | `[]`    | List of all interfaces to setup, keep in mind it can cause various errors if you configure a interface here and later use it as a port on a bridge |     N    |
+| bridges                                  | [list of dicts](#bridges)    | `[]`    | List of network bridges to setup (all bridges are managed by openvswitch)                                                                          |     N    |
 
-#allow traffic for all specified protocol to all servers which take use of that option.
-services:
-  - <service name or port>
-  ...
-```
+### type
+Defines how a network or bridge should be configured. Possible values are:
 
-
-## Dependencies
+| value  | Description                            | Side effects                       |
+|--------|----------------------------------------|------------------------------------|
+| manual | Do nothing but bring up interface link | Ignore options `static` and `dhcp` |
+| static | Configure interface statically         | Ignore option `dhcp`               |
+| dhcp   | Configure interface via dhcp           | Ignore option `static`             |
 
 
-
-## Example Playbook
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-
-### Playbook
-
-```yml
-```
+### dhcp
+| Option    | Type    | Default | Description                                                            | Required |
+|-----------|---------|---------|------------------------------------------------------------------------|:--------:|
+| hostname  | string  |         | Hostname to be requested                                               |     N    |
+| leasetime | integer |         | Request a specific lease time in seconds.                              |     N    |
+| metric    | integer |         | Metrics are used to prefer an interface over another one, lowest wins. |     N    |
 
 
-### Vars
+### static
+| Option  | Type   | Default | Description                     | Required |
+|---------|--------|---------|---------------------------------|:--------:|
+| ip      | string |         | IP Address to configure as CIDR |     Y    |
+| gateway | string |         | Gateway                         |     N    |
 
-```yml
-```
+
+### interfaces
+| Option   | Type            | Default                                        | Description                                            | Required |
+|----------|-----------------|------------------------------------------------|--------------------------------------------------------|:--------:|
+| name     | string          |                                                | Name of the interface to configure                     |     Y    |
+| bring_up | boolean         | `True`                                         | Automatically bring interface link up                  |     N    |
+| type     | [string](#type) | `{{ network_managment_default_type }}`         | Specify how the network interface should be configured |     N    |
+| dhcp     | [dict](#dhcp)   | `{{ network_managment_default_dhcp_options }}` | Additional options for dhcp interfaces                 |     N    |
+| mtu      | integer         |                                                | MTU size                                               |     N    |
 
 
-### Result
+### bridges
+Beside every option from the [interfaces](#interfaces) dict, the following options can be specified:
 
-A short summary what the playbook actually does.
+| Option | Type            | Default | Description                                      | Required |
+|--------|-----------------|---------|--------------------------------------------------|:--------:|
+| ports  | list of strings | `[]`    | List of physical interfaces to add to the bridge |     N    |
 
 
 ## License
@@ -62,4 +70,4 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 
 ## Author Information
 
- * [Markus Mroch (Mr. Pi)](https://github.com/Mr-Pi) _markus.mroch@stuvus.uni-stuttgart.de_
+ * [Markus Mroch (Mr. Pi)](https://github.com/Mr-Pi) &gt;_markus.mroch@stuvus.uni-stuttgart.de_&lt;

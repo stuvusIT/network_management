@@ -1,9 +1,0 @@
----
-- name: Configure Debian networking
-  template:
-    src: interfaces.j2
-    dest: /etc/network/interfaces
-  when: ansible_os_family == "Debian"
-  notify: Reboot firewall
-
-- meta: flush_handlers
