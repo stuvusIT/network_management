@@ -5,6 +5,5 @@ network_management_default_bring_up: True
 network_management_clear_bridges: False
 network_management_reboot_for_config: False
 network_management_default_dhcp_options: {}
-network_management_default_static_options: {}
 interfaces: []
 bridges: []
