@@ -21,7 +21,6 @@ pre-up for br in `ovs-vsctl list-br`; do ovs-vsctl --if-exists "$br"; done
 {% if interface.bring_up|default(network_management_default_bring_up) %}
 auto {{ interface.name }}
 {% endif -%}
-
 iface {{ interface.name }} inet {{ interface.type|default(network_management_default_type) }}
 {% if interface.type|default(network_management_default_type) == "dhcp" %}
 	hostname {{ interface.hostname|default(ansible_hostname) }}
@@ -43,6 +42,7 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 
 
 {% endfor %}
+{% if bridges|length > 0 %}
 
 ################################################################################
 # Configure all network bridges                                                #
@@ -118,6 +118,7 @@ post-up ovs-vsctl {{''
 	-}} --may-exist add-port {{ patch_field_dev_out }} {{ patch_field_dev_out }}_patch_{{ loop.index }} -- {{''
 	-}} set interface {{ patch_field_dev_out }}_patch_{{ loop.index }} type=patch options:peer={{ patch_field_dev_in }}_patch_{{ loop.index }}; true
 {% endfor %}
+{% endif %}
 {% endif %}
 {% if network_management_default_gateway is defined %}
 
