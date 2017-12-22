@@ -24,8 +24,10 @@ auto {{ interface.name }}
 iface {{ interface.name }} inet {{ interface.type|default(network_management_default_type) }}
 {% if interface.type|default(network_management_default_type) == "dhcp" %}
 	hostname {{ interface.hostname|default(ansible_hostname) }}
-	{% if interface.leasetime is defined %}leasetime {{ interface.leasetime }}{% endif %}
-	{% if interface.metric is defined %}metric {{ interface.metric }}{% endif %}
+	{% if interface.leasetime is defined or
+	network_management_default_dhcp_options.leasetime is defined %}leasetime {{ interface.leasetime|default(network_management_default_dhcp_options.leasetime) }}{% endif %}
+	{% if interface.metric is defined or
+	network_management_default_dhcp_options.metric is defined %}metric {{ interface.metric|default(network_management_default_dhcp_options.metric) }}{% endif %}
 {% elif interface.type|default(network_management_default_type) == "static" or interface.type|default(network_management_default_type) == "manual" -%}
 
 {% for ip in interface.ips %}
@@ -66,8 +68,10 @@ auto {{ bridge.name }}
 {% if bridge.type | default(network_management_default_type) == "dhcp"%}
 iface {{ bridge.name }} inet dhcp
 	hostname {{ bridge.hostname|default(ansible_hostname) }}
-	{% if bridge.leasetime is defined %}leasetime {{ bridge.leasetime }}{% endif %}
-	{% if bridge.metric is defined %}metric {{ bridge.metric }}{% endif %}
+	{% if bridge.leasetime is defined or
+	network_management_default_dhcp_options.leasetime is defined %}leasetime {{ bridge.leasetime|default(network_management_default_dhcp_options.leasetime) }}{% endif %}
+	{% if bridge.metric is defined or
+	network_management_default_dhcp_options.metric is defined %}metric {{ bridge.metric|default(network_management_default_dhcp_options.metric) }}{% endif %}
 {% elif bridge.type | default(network_management_default_type) == "static" %}
 iface {{ bridge.name }} inet static
 	address {{ bridge.static[0] | ipaddr('address') }}
