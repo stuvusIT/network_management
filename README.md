@@ -6,7 +6,7 @@ This role configures your network interfaces automatically. This role also suppo
 ## Requirements
 
 A Linux distribution, with debian networking support or systemd as init system.
-
+`python-netaddr` has to be installed on the executing machine.
 
 ## Role Variables
 
