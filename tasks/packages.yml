@@ -5,4 +5,4 @@
   with_items:
     - openvswitch-switch
     - openvswitch-common
-  when: bridges is defined and bridges != []
+  when: bridges|length > 0
