@@ -36,6 +36,10 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 	address {{ ip | ipaddr('address') }}
 	network {{ ip | ipaddr('network') }}
 	netmask {{ ip | ipaddr('netmask') }}
+	broadcast {{ interface.broadcast|default(ip | ipaddr('broadcast')) }}
+{% if interface.gateway is defined or network_management_default_gateway is defined %}
+	gateway {{ interface.gateway|default(network_management_default_gateway )|ipaddr('address') }}
+{% endif %}
 {% endfor %}
 {% endif %}
 	dns-nameservers{% for nameserver in interface.nameservers|default(network_management_nameservers) %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
@@ -49,7 +53,7 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 ################################################################################
 # Bring up all ports for all bridges
 {% for bridge in bridges %}
-{% for port in interface.ports | default({}) %}
+{% for port in bridge.ports | default({}) %}
 auto {{ port.port }}
 iface {{ port.port }} inet manual
 
@@ -57,54 +61,52 @@ iface {{ port.port }} inet manual
 {% endfor %}
 
 # Bring all openvswitch bridges up and configure ovs
-{% for interface in bridges %}
-auto {{ interface.name }}
-{% if interface.type | default(network_management_default_type) == "dhcp"%}
-iface {{ interface.name }} inet dhcp
-	hostname {{ interface.hostname|default(ansible_hostname) }}
-	{% if interface.leasetime is defined %}leasetime {{ interface.leasetime }}{% endif %}
-	{% if interface.metric is defined %}metric {{ interface.metric }}{% endif %}
-{% elif interface.type | default(network_management_default_type) == "static" %}
-iface {{ interface.name }} inet static
-	address {{ interface.static[0] | ipaddr('address') }}
-	network {{ interface.static[0] | ipaddr('network') }}
-	netmask {{ interface.static[0] | ipaddr('netmask') }}
-{% if interface.broadcast is defined %}
-	broadcast {{ interface.broadcast }}
+{% for bridge in bridges %}
+auto {{ bridge.name }}
+{% if bridge.type | default(network_management_default_type) == "dhcp"%}
+iface {{ bridge.name }} inet dhcp
+	hostname {{ bridge.hostname|default(ansible_hostname) }}
+	{% if bridge.leasetime is defined %}leasetime {{ bridge.leasetime }}{% endif %}
+	{% if bridge.metric is defined %}metric {{ bridge.metric }}{% endif %}
+{% elif bridge.type | default(network_management_default_type) == "static" %}
+iface {{ bridge.name }} inet static
+	address {{ bridge.static[0] | ipaddr('address') }}
+	network {{ bridge.static[0] | ipaddr('network') }}
+	netmask {{ bridge.static[0] | ipaddr('netmask') }}
+	broadcast {{ bridge.broadcast|default(bridge.static[0]|ipaddr('broadcast')) }}
+{% if bridge.gateway is defined or network_management_default_gateway is defined %}
+	gateway {{ bridge.gateway|default(network_management_default_gateway )|ipaddr('address') }}
 {% endif %}
-{% if interface.gateway is defined %}
-	gateway {{ interface.gateway|ipaddr('address') }}
+{% if bridge.search is defined %}
+	dns-search {{ bridge.search }}
 {% endif %}
-{% if interface.search is defined %}
-	dns-search {{ interface.search }}
-{% endif %}
-{% if interface.nameservers is defined %}
-	dns-nameservers{% for nameserver in interface.nameservers %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
+{% if bridge.nameservers is defined %}
+	dns-nameservers{% for nameserver in bridge.nameservers %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
 
 {% endif %}
 {% else %}
-iface {{ interface.name }} inet manual
+iface {{ bridge.name }} inet manual
 {% endif %}
-	pre-up    ovs-vsctl --may-exist add-br {{ interface.name }}{% if interface.parent is defined %} {{ interface.parent }} {{ interface.vlan }}{% endif %}
+	pre-up    ovs-vsctl --may-exist add-br {{ bridge.name }}{% if bridge.parent is defined %} {{ bridge.parent }} {{ bridge.vlan }}{% endif %}
 
-{% for port in interface.ports | default({}) %}
-	pre-up    ovs-vsctl --may-exist add-port {{ interface.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}
+{% for port in bridge.ports | default({}) %}
+	pre-up    ovs-vsctl --may-exist add-port {{ bridge.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}
 
 {% endfor %}
-{% if interface.post_up is defined %}
-	post-up {{ interface.post_up }}
+{% if bridge.post_up is defined %}
+	post-up {{ bridge.post_up }}
 {% endif %}
-{% for port in interface.ports | default({}) %}
-	pre-down  ovs-vsctl --if-exists del-port {{ interface.name }} {{ port.port }}
+{% for port in bridge.ports | default({}) %}
+	pre-down  ovs-vsctl --if-exists del-port {{ bridge.name }} {{ port.port }}
 {% endfor %}
-	post-down ovs-vsctl --if-exists del-br {{ interface.name }}
+	post-down ovs-vsctl --if-exists del-br {{ bridge.name }}
 
-{% if interface.static is defined %}{% for static_ip in interface.static %}{% if not loop.first %}{#add all but first static ip addresses#}
-iface {{ interface.name }} inet static
+{% if bridge.static is defined %}{% for static_ip in bridge.static %}{% if not loop.first %}{#add all but first static ip addresses#}
+iface {{ bridge.name }} inet static
 	address {{ static_ip | ipaddr('address') }}
 	netmask {{ static_ip | ipaddr('netmask') }}
-{% if interface.post_up %}
-	post-up {{ interface.post_up }}
+{% if bridge.post_up %}
+	post-up {{ bridge.post_up }}
 {% endif %}
 {% endif %}{% endfor %}{% endif %}
 
