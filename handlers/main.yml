@@ -1,0 +1,26 @@
+---
+- name: Reboot server
+  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+  async: 1
+  poll: 0
+  ignore_errors: true
+  notify: Wait for server to come back online
+  when: network_management_reboot_for_config
+  listen: reload_network
+
+- name: Wait for server to come back online
+  wait_for:
+    host: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    delay: 30
+    connect_timeout: 2
+    port: 22
+  delegate_to: localhost
+  become: false
+  when: network_management_reboot_for_config
+
+- name: Restart networking.service
+  service:
+    name: networking
+    state: restarted
+  listen: reload_network
+  when: not network_management_reboot_for_config
