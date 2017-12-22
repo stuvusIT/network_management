@@ -16,12 +16,10 @@
       {%- endif -%},
       {%- endfor -%}]
 
-
 - name: Configure Debian networking
   template:
     src: interfaces.j2
     dest: /etc/network/interfaces
-  when: ansible_os_family == "Debian" and not network_management_allways_script
-  notify: reload_network
+  when: ansible_os_family == "Debian" and not network_management_always_script
 
 - meta: flush_handlers

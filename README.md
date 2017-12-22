@@ -1,6 +1,6 @@
 # network_management
 
-This role configures your network interfaces automatically. This role also support complex setups with openvswitch and different vlans. On debian based systems a proper `/etc/network/interfaces` configuration is generated unless `network_management_allways_script` is set to `True`.
+This role configures your network interfaces automatically. This role also support complex setups with openvswitch and different vlans. On debian based systems a proper `/etc/network/interfaces` configuration is generated unless `network_management_always_script` is set to `True`.
 
 
 ## Requirements
@@ -13,7 +13,7 @@ A Linux distribution, with debian networking support or systemd as init system.
 ### Primary
 | Option                                  | Type                         | Default                  | Description                                                                                                                                        | Required |
 |-----------------------------------------|------------------------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|
-| network_management_allways_script       | boolean                      | `False`                  | Generate a systemd service and network management script always (overwrites networking.service if exist)                                           |     N    |
+| network_management_always_script        | boolean                      | `False`                  | Generate a systemd service and network management script always (overwrites networking.service if exist)                                           |     N    |
 | network_management_default_type         | [string](#type)              | `dhcp`                   | Default type to setup a interface or bridge                                                                                                        |     N    |
 | network_management_default_bring_up     | boolean                      | `True`                   | Bring interface up on start                                                                                                                        |     N    |
 | network_management_default_dhcp_options | [dict](#dhcp)                | `{}`                     | Additional options for dhcp interfaces                                                                                                             |     N    |

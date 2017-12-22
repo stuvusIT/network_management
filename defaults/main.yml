@@ -1,5 +1,5 @@
 ---
-network_management_allways_script: False
+network_management_always_script: False
 network_management_default_type: dhcp
 network_management_default_bring_up: True
 network_management_clear_bridges: False
