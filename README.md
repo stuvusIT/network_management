@@ -45,17 +45,18 @@ Defines how a network or bridge should be configured. Possible values are:
 
 
 ### interfaces
-| Option   | Type            | Default                                         | Description                                                                    |             Required            |
-|----------|-----------------|-------------------------------------------------|--------------------------------------------------------------------------------|:-------------------------------:|
-| name     | string          |                                                 | Name of the interface to configure, ignored if `mac` is not specified          |  only if `mac` is not specified |
-| mac      | string          |                                                 | MAC-Address of the interface to configure, if specified `name` is autodetected | only if `name` is not specified |
-| bring_up | boolean         | `{{ network_management_default_bring_up }}`     | Automatically bring interface link up                                          |                N                |
-| type     | [string](#type) | `{{ network_management_default_type }}`         | Specify how the network interface should be configured                         |                N                |
-| dhcp     | [dict](#dhcp)   | `{{ network_management_default_dhcp_options }}` | Additional options for dhcp interfaces                                         |                N                |
-| mtu      | integer         |                                                 | MTU size                                                                       |                N                |
-| ip       | string          |                                                 | IP address to assign as CIDR                                                   |                N                |
-| ips      | list of strings |                                                 | IP addresses to assign to interface as CIDR                                    |    only if `type` is `static`   |
-| gateway  | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                   |                N                |
+| Option      | Type            | Default                                         | Description                                                                    |             Required            |
+|-------------|-----------------|-------------------------------------------------|--------------------------------------------------------------------------------|:-------------------------------:|
+| name        | string          |                                                 | Name of the interface to configure, ignored if `mac` is not specified          |  only if `mac` is not specified |
+| mac         | string          |                                                 | MAC-Address of the interface to configure, if specified `name` is autodetected | only if `name` is not specified |
+| bring_up    | boolean         | `{{ network_management_default_bring_up }}`     | Automatically bring interface link up                                          |                N                |
+| type        | [string](#type) | `{{ network_management_default_type }}`         | Specify how the network interface should be configured                         |                N                |
+| dhcp        | [dict](#dhcp)   | `{{ network_management_default_dhcp_options }}` | Additional options for dhcp interfaces                                         |                N                |
+| nameservers | list of strings | `{{ network_management_nameservers }}`          | Nameservers to use                                                             |                N                |
+| mtu         | integer         |                                                 | MTU size                                                                       |                N                |
+| ip          | string          |                                                 | IP address to assign as CIDR                                                   |                N                |
+| ips         | list of strings |                                                 | IP addresses to assign to interface as CIDR                                    |    only if `type` is `static`   |
+| gateway     | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                   |                N                |
 
 
 ### bridges

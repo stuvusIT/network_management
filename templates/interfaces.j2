@@ -1,9 +1,9 @@
 # vim: sw=4 ts=4 ft=jinja
 # {{ ansible_managed }}
 
-
 {% if network_management_pre_up is defined %}
 post_up {{ network_management_pre_up }}
+
 {% endif %}
 
 auto lo
@@ -27,7 +27,7 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 	hostname {{ interface.hostname|default(ansible_hostname) }}
 	{% if interface.leasetime is defined %}leasetime {{ interface.leasetime }}{% endif %}
 	{% if interface.metric is defined %}metric {{ interface.metric }}{% endif %}
-{% elif interface.type|default(network_management_default_type) == "static" -%}
+{% elif interface.type|default(network_management_default_type) == "static" or interface.type|default(network_management_default_type) == "manual" -%}
 
 {% for ip in interface.ips %}
 	{% if not loop.first %}
@@ -37,9 +37,11 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 	address {{ ip | ipaddr('address') }}
 	network {{ ip | ipaddr('network') }}
 	netmask {{ ip | ipaddr('netmask') }}
-
 {% endfor %}
 {% endif %}
+	dns-nameservers{% for nameserver in interface.nameservers|default(network_management_nameservers) %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
+
+
 {% endfor %}
 
 ################################################################################

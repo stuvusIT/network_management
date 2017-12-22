@@ -3,7 +3,8 @@
   set_fact:
     interfaces: |
       [{%- for item in interfaces -%}
-      {%- set ips=item['ips']|default([])|union([item.ip])|unique -%}
+      {%- set f_ip_a=[item.ip] if "ip" in item else [] -%}
+      {%- set ips=item['ips']|default([])|union(f_ip_a)|unique -%}
       {%- if 'mac' in item -%}
         {%- for interface in ansible_interfaces -%}
           {%- if hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
@@ -15,12 +16,6 @@
       {%- endif -%},
       {%- endfor -%}]
 
-- name: debug
-  debug:
-    msg: |
-      {% for interface in interfaces %}
-        {{ interface }}
-      {% endfor %}
 
 - name: Configure Debian networking
   template:
