@@ -62,8 +62,8 @@ Defines how a network or bridge should be configured. Possible values are:
 ### bridges
 Beside every option from the [interfaces](#interfaces) dict, the following options can be specified:
 
-| Option | Type            | Default | Description                                      | Required |
-|--------|-----------------|---------|--------------------------------------------------|:--------:|
+| Option  | Type            | Default | Description                                      | Required |
+|---------|-----------------|---------|--------------------------------------------------|:--------:|
 | `ports` | list of strings | `[]`    | List of physical interfaces to add to the bridge |     N    |
 
 
