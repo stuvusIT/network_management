@@ -37,11 +37,11 @@ Defines how a network or bridge should be configured. Possible values are:
 
 
 ### dhcp
-| Option    | Type    | Default                  | Description                                                            | Required |
-|-----------|---------|--------------------------|------------------------------------------------------------------------|:--------:|
-| hostname  | string  | `{{ ansible_hostname }}` | Hostname to be requested                                               |     N    |
-| leasetime | integer |                          | Request a specific lease time in seconds.                              |     N    |
-| metric    | integer |                          | Metrics are used to prefer an interface over another one, lowest wins. |     N    |
+| Option    | Type    | Default                  | Description                                                                        | Required |
+|-----------|---------|--------------------------|------------------------------------------------------------------------------------|:--------:|
+| hostname  | string  | `{{ ansible_hostname }}` | Hostname to be requested (is ignored in `network_management_default_dhcp_options`) |     N    |
+| leasetime | integer |                          | Request a specific lease time in seconds.                                          |     N    |
+| metric    | integer |                          | Metrics are used to prefer an interface over another one, lowest wins.             |     N    |
 
 
 ### interfaces
@@ -78,4 +78,4 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 
 ## Author Information
 
- * [Markus Mroch (Mr. Pi)](https://github.com/Mr-Pi) &gt;_markus.mroch@stuvus.uni-stuttgart.de_&lt;
+ * [Markus Mroch (Mr. Pi)](https://github.com/Mr-Pi) &lt;_markus.mroch@stuvus.uni-stuttgart.de_&gt;
