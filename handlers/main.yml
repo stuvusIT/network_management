@@ -1,6 +1,6 @@
 ---
 - name: Reboot server
-  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+  shell: sleep 2 && shutdown -r now "Ansible - networ configuration changed"
   async: 1
   poll: 0
   ignore_errors: true
