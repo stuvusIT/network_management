@@ -1,0 +1,32 @@
+---
+- name: Auto detect interface names
+  set_fact:
+    interfaces: |
+      [{%- for item in interfaces -%}
+      {%- set ips=item['ips']|default([])|union([item.ip])|unique -%}
+      {%- if 'mac' in item -%}
+        {%- for interface in ansible_interfaces -%}
+          {%- if hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
+            {{ item|combine({"name":interface,"ips":ips}) }}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {{ item|combine({"ips":ips}) }}
+      {%- endif -%},
+      {%- endfor -%}]
+
+- name: debug
+  debug:
+    msg: |
+      {% for interface in interfaces %}
+        {{ interface }}
+      {% endfor %}
+
+- name: Configure Debian networking
+  template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+  when: ansible_os_family == "Debian" and not network_management_allways_script
+  notify: reload_network
+
+- meta: flush_handlers

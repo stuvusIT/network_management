@@ -1,0 +1,8 @@
+---
+- name: Install openvswitch
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - openvswitch-switch
+    - openvswitch-common
+  when: bridges is defined and bridges != []
