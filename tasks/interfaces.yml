@@ -1,19 +1,37 @@
 ---
+
 - name: Auto detect interface names
   set_fact:
     interfaces: |
       [{%- for item in interfaces -%}
-      {%- set f_ip_a=[item.ip] if "ip" in item else [] -%}
-      {%- set ips=item['ips']|default([])|union(f_ip_a)|unique -%}
+      {%- set f_ip_a=[item.ip] if "ip" in item else [] -%}{# get the primary ip address (ip field) #}
+      {%- set ips=item['ips']|default([])|union(f_ip_a)|unique -%}{# concat ip field to list of all ips #}
       {%- if 'mac' in item -%}
-        {%- for interface in ansible_interfaces -%}
-          {%- if hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
+        {%- for interface in ansible_interfaces -%}{# only check real interfaces #}
+          {%- if "ansible_"+interface in hostvars[ansible_hostname] and hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
             {{ item|combine({"name":interface,"ips":ips}) }}
           {%- endif -%}
         {%- endfor -%}
       {%- else -%}
         {{ item|combine({"ips":ips}) }}
-      {%- endif -%},
+      {%- endif -%}{% if not loop.last %},{% endif %}
+      {%- endfor -%}]
+
+- name: Prepare bridges
+  set_fact:
+    bridges: |
+      [{%- for item in bridges -%}
+      {%- set f_ip_a=[item.ip] if "ip" in item else [] -%}{# get the primary ip address (ip field) #}
+      {%- set ips=item['ips']|default([])|union(f_ip_a)|unique -%}{# concat ip field to list of all ips #}
+      {%- if 'mac' in item -%}
+        {%- for interface in ansible_interfaces -%}{# only check real interfaces #}
+          {%- if "ansible_"+interface in hostvars[ansible_hostname] and hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
+            {{ item|combine({"name":interface,"ips":ips}) }}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {{ item|combine({"ips":ips}) }}
+      {%- endif -%}{% if not loop.last %},{% endif %}
       {%- endfor -%}]
 
 - name: Configure Debian networking
