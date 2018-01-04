@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 {% if network_management_pre_up is defined %}
-post_up {{ network_management_pre_up }}
+pre-up {{ network_management_pre_up }}
 
 {% endif %}
 
@@ -12,11 +12,13 @@ iface lo inet loopback
 # Delete all network bridges
 pre-up for br in `ovs-vsctl list-br`; do ovs-vsctl --if-exists "$br"; done
 {% endif %}
+{% if interfaces|length > 0 %}
 
 ################################################################################
 # Configure all network interfaces                                             #
 ################################################################################
-{% for interface in interfaces %}
+{% endif %}
+{% for interface in interfaces %}{% if interface.name is defined %}
 {% if interface.bring_up|default(network_management_default_bring_up) %}
 auto {{ interface.name }}
 {% endif -%}
@@ -27,7 +29,8 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 	network_management_default_dhcp_options.leasetime is defined %}leasetime {{ interface.leasetime|default(network_management_default_dhcp_options.leasetime) }}{% endif %}
 	{% if interface.metric is defined or
 	network_management_default_dhcp_options.metric is defined %}metric {{ interface.metric|default(network_management_default_dhcp_options.metric) }}{% endif %}
-{% elif interface.type|default(network_management_default_type) == "static" or interface.type|default(network_management_default_type) == "manual" -%}
+{% elif interface.type|default(network_management_default_type) == "static" or
+   interface.type|default(network_management_default_type) == "manual" -%}
 
 {% for ip in interface.ips %}
 	{% if not loop.first %}
@@ -46,7 +49,7 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 	dns-nameservers{% for nameserver in interface.nameservers|default(network_management_nameservers) %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
 
 
-{% endfor %}
+{% endif %}{% endfor %}
 {% if bridges|length > 0 %}
 
 ################################################################################
@@ -63,59 +66,51 @@ iface {{ port.port }} inet manual
 
 # Bring all openvswitch bridges up and configure ovs
 {% for bridge in bridges %}
+{% if bridge.bring_up|default(network_management_default_bring_up) %}
 auto {{ bridge.name }}
-{% if bridge.type | default(network_management_default_type) == "dhcp"%}
-iface {{ bridge.name }} inet dhcp
+{% endif -%}
+iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_type) }}
+	pre-up ovs-vsctl --may-exist add-br {{ bridge.name }}{% if bridge.parent is defined %} {{ bridge.parent }} {{ bridge.vlan }}{% endif %}{{ '' }}
+{% for port in bridge.ports | default({}) %}
+	pre-up ovs-vsctl --may-exist add-port {{ bridge.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}{{ '' }}
+{% endfor %}
+{% if bridge.type|default(network_management_default_type) == "dhcp" %}
 	hostname {{ bridge.hostname|default(ansible_hostname) }}
 	{% if bridge.leasetime is defined or
 	network_management_default_dhcp_options.leasetime is defined %}leasetime {{ bridge.leasetime|default(network_management_default_dhcp_options.leasetime) }}{% endif %}
 	{% if bridge.metric is defined or
 	network_management_default_dhcp_options.metric is defined %}metric {{ bridge.metric|default(network_management_default_dhcp_options.metric) }}{% endif %}
-{% elif bridge.type | default(network_management_default_type) == "static" %}
-iface {{ bridge.name }} inet static
-	address {{ bridge.static[0] | ipaddr('address') }}
-	network {{ bridge.static[0] | ipaddr('network') }}
-	netmask {{ bridge.static[0] | ipaddr('netmask') }}
-	broadcast {{ bridge.broadcast|default(bridge.static[0]|ipaddr('broadcast')) }}
+
+{% elif bridge.type|default(network_management_default_type) == "static" or
+   bridge.type|default(network_management_default_type) == "manual" -%}
+
+{% for ip in bridge.ips %}{# start: additional ips #}
+	{% if not loop.first %}
+
+iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_type) }}
+	{% endif -%}
+	address {{ ip | ipaddr('address') }}
+	network {{ ip | ipaddr('network') }}
+	netmask {{ ip | ipaddr('netmask') }}
+	broadcast {{ bridge.broadcast|default(ip | ipaddr('broadcast')) }}
 {% if bridge.gateway is defined or network_management_default_gateway is defined %}
 	gateway {{ bridge.gateway|default(network_management_default_gateway )|ipaddr('address') }}
 {% endif %}
-{% if bridge.search is defined %}
-	dns-search {{ bridge.search }}
+{% endfor %}{# end: additional ips #}
 {% endif %}
-{% if bridge.nameservers is defined %}
-	dns-nameservers{% for nameserver in bridge.nameservers %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
-
-{% endif %}
-{% else %}
-iface {{ bridge.name }} inet manual
-{% endif %}
-	pre-up    ovs-vsctl --may-exist add-br {{ bridge.name }}{% if bridge.parent is defined %} {{ bridge.parent }} {{ bridge.vlan }}{% endif %}
-
+	dns-nameservers{% for nameserver in bridge.nameservers|default(network_management_nameservers) %} {{ nameserver|ipaddr('address') }}{% endfor %}{{ '\n' }}{# for loop, to allow ipaddr filter usage #}
 {% for port in bridge.ports | default({}) %}
-	pre-up    ovs-vsctl --may-exist add-port {{ bridge.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}
-
-{% endfor %}
-{% if bridge.post_up is defined %}
-	post-up {{ bridge.post_up }}
-{% endif %}
-{% for port in bridge.ports | default({}) %}
-	pre-down  ovs-vsctl --if-exists del-port {{ bridge.name }} {{ port.port }}
+	post-down ovs-vsctl --if-exists del-port {{ bridge.name }} {{ port.port }}
 {% endfor %}
 	post-down ovs-vsctl --if-exists del-br {{ bridge.name }}
 
-{% if bridge.static is defined %}{% for static_ip in bridge.static %}{% if not loop.first %}{#add all but first static ip addresses#}
-iface {{ bridge.name }} inet static
-	address {{ static_ip | ipaddr('address') }}
-	netmask {{ static_ip | ipaddr('netmask') }}
-{% if bridge.post_up %}
-	post-up {{ bridge.post_up }}
-{% endif %}
-{% endif %}{% endfor %}{% endif %}
 
 {% endfor %}
 {% if patch_field is defined %}
 
+################################################################################
+# OpenVswitch Patchfield, connect requested ports together                     #
+################################################################################
 {% for patch_field_dev_in, patch_field_dev_out in patch_field.iteritems() %}
 post-up ovs-vsctl {{''
 	-}} --may-exist add-port {{ patch_field_dev_in }} {{ patch_field_dev_in }}_patch_{{ loop.index }} -- {{''
@@ -123,13 +118,13 @@ post-up ovs-vsctl {{''
 	-}} --may-exist add-port {{ patch_field_dev_out }} {{ patch_field_dev_out }}_patch_{{ loop.index }} -- {{''
 	-}} set interface {{ patch_field_dev_out }}_patch_{{ loop.index }} type=patch options:peer={{ patch_field_dev_in }}_patch_{{ loop.index }}; true
 {% endfor %}
-{% endif %}
-{% endif %}
+{% endif %}{# end: if patch_field #}
+{% endif %}{# end: if bridges #}
 {% if network_management_default_gateway is defined %}
 
 
 post-up ip r replace default via {{ network_management_default_gateway }}
 {% endif %}
 {% if network_management_post_up is defined %}
-post_up {{ network_management_post_up }}
+post-up {{ network_management_post_up }}
 {% endif %}
