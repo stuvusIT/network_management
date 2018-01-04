@@ -44,6 +44,12 @@ Defines how a network or bridge should be configured. Possible values are:
 | `metric`    | integer |                          | Metrics are used to prefer an interface over another one, lowest wins.             |     N    |
 
 
+### port
+| Option | Type   | Default | Description                     | Required |
+|--------|--------|---------|---------------------------------|:--------:|
+| port   | string |         | Interface name to add to bridge |     Y    |
+
+
 ### interfaces
 | Option        | Type            | Default                                         | Description                                                                               |             Required            |
 |---------------|-----------------|-------------------------------------------------|-------------------------------------------------------------------------------------------|:-------------------------------:|
@@ -62,9 +68,9 @@ Defines how a network or bridge should be configured. Possible values are:
 ### bridges
 Beside every option from the [interfaces](#interfaces) dict, the following options can be specified:
 
-| Option  | Type            | Default | Description                                      | Required |
-|---------|-----------------|---------|--------------------------------------------------|:--------:|
-| `ports` | list of strings | `[]`    | List of physical interfaces to add to the bridge |     N    |
+| Option  | Type                   | Default | Description                                      | Required |
+|---------|------------------------|---------|--------------------------------------------------|:--------:|
+| `ports` | [list of dicts](#port) | `[]`    | List of physical interfaces to add to the bridge |     N    |
 
 
 ## ToDo
