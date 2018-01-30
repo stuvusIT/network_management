@@ -64,17 +64,17 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 |---------|------------------------|---------|--------------------------------------------------|:--------:|
 | `ports` | [list of dicts](#port) | `[]`    | List of physical interfaces to add to the bridge |     N    |
 
-### patch_field
-| Option      | Type   | Default | Description                                                   | Required |
-|-------------|--------|---------|---------------------------------------------------------------|:--------:|
-| ___key___   | string |         | First port or interface in between the link should be made    | Y        |
-| ___value___ | string |         | Second port or interfaces in between the link should be made  | Y        |
-
 ### port
 | Option | Type    | Default | Description                                         | Required |
 |--------|---------|---------|-----------------------------------------------------|:--------:|
 | port   | string  |         | Interface name to add to bridge                     |     Y    |
 | vlan   | integer |         | Add the port with specified vlan to selected bridge |     N    |
+
+### patch_field
+| Option      | Type   | Default | Description                                                   | Required |
+|-------------|--------|---------|---------------------------------------------------------------|:--------:|
+| ___key___   | string |         | First port or interface in between the link should be made    | Y        |
+| ___value___ | string |         | Second port or interfaces in between the link should be made  | Y        |
 
 
 ## ToDo
