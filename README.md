@@ -45,9 +45,10 @@ Defines how a network or bridge should be configured. Possible values are:
 
 
 ### port
-| Option | Type   | Default | Description                     | Required |
-|--------|--------|---------|---------------------------------|:--------:|
-| port   | string |         | Interface name to add to bridge |     Y    |
+| Option | Type    | Default | Description                                         | Required |
+|--------|---------|---------|-----------------------------------------------------|:--------:|
+| port   | string  |         | Interface name to add to bridge                     |     Y    |
+| vlan   | integer |         | Add the port with specified vlan to selected bridge |     N    |
 
 
 ### interfaces
