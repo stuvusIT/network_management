@@ -35,7 +35,6 @@ Defines how a network or bridge should be configured. Possible values are:
 | `static` | Configure interface statically         | Ignore option `dhcp`                          |
 | `dhcp`   | Configure interface via dhcp           | Ignore option `ips` and `default_gw`          |
 
-
 ### dhcp
 | Option      | Type    | Default                  | Description                                                                        | Required |
 |-------------|---------|--------------------------|------------------------------------------------------------------------------------|:--------:|
@@ -57,7 +56,6 @@ Defines how a network or bridge should be configured. Possible values are:
 | `ips`         | list of strings |                                                 | IP addresses to assign (IP address with CIDR suffix)                                      | only if `type` is `static`      |
 | `gateway`     | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                              | N                               |
 
-
 ### bridges
 Beside every option from the [interfaces](#interfaces) dict, the following options can be specified:
 
@@ -66,9 +64,10 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 | `ports` | [list of dicts](#port) | `[]`    | List of physical interfaces to add to the bridge |     N    |
 
 ### port
-| Option | Type   | Default | Description                     | Required |
-|--------|--------|---------|---------------------------------|:--------:|
-| `port` | string |         | Interface name to add to bridge | Y        |
+| Option | Type    | Default | Description                                         | Required |
+|--------|---------|---------|-----------------------------------------------------|:--------:|
+| port   | string  |         | Interface name to add to bridge                     |     Y    |
+| vlan   | integer |         | Add the port with specified vlan to selected bridge |     N    |
 
 ## License
 
