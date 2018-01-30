@@ -36,7 +36,6 @@ Defines how a network or bridge should be configured. Possible values are:
 | `static` | Configure interface statically         | Ignore option `dhcp`                          |
 | `dhcp`   | Configure interface via dhcp           | Ignore option `ips` and `default_gw`          |
 
-
 ### dhcp
 | Option      | Type    | Default                  | Description                                                                        | Required |
 |-------------|---------|--------------------------|------------------------------------------------------------------------------------|:--------:|
@@ -44,28 +43,19 @@ Defines how a network or bridge should be configured. Possible values are:
 | `leasetime` | integer |                          | Request a specific lease time in seconds.                                          |     N    |
 | `metric`    | integer |                          | Metrics are used to prefer an interface over another one, lowest wins.             |     N    |
 
-
-### port
-| Option | Type    | Default | Description                                         | Required |
-|--------|---------|---------|-----------------------------------------------------|:--------:|
-| `port` | string  |         | Interface name to add to bridge                     |     Y    |
-| `vlan` | integer |         | Add the port with specified vlan to selected bridge |     N    |
-
-
 ### interfaces
-| Option        | Type            | Default                                         | Description                                                                               |             Required            |
+| Option        | Type            | Default                                         | Description                                                                               | Required                        |
 |---------------|-----------------|-------------------------------------------------|-------------------------------------------------------------------------------------------|:-------------------------------:|
-| `name`        | string          |                                                 | Name of the interface to configure, ignored if `mac` is specified                         |  only if `mac` is not specified |
+| `name`        | string          |                                                 | Name of the interface to configure, ignored if `mac` is specified                         | only if `mac` is not specified  |
 | `mac`         | string          |                                                 | MAC-Address of the interface to configure. If `name` is specified, `mac` is autodetected. | only if `name` is not specified |
-| `bring_up`    | boolean         | `{{ network_management_default_bring_up }}`     | Automatically bring interface link up                                                     |                N                |
-| `type`        | [string](#type) | `{{ network_management_default_type }}`         | Specify how the network interface should be configured                                    |                N                |
-| `dhcp`        | [dict](#dhcp)   | `{{ network_management_default_dhcp_options }}` | Additional options for dhcp interfaces                                                    |                N                |
-| `nameservers` | list of strings | `{{ network_management_nameservers }}`          | Nameservers to use                                                                        |                N                |
-| `mtu`         | integer         |                                                 | MTU size                                                                                  |                N                |
-| `ip`          | string          |                                                 | IP address to assign as CIDR                                                              |                N                |
-| `ips`         | list of strings |                                                 | IP addresses to assign to interface as CIDR                                               |    only if `type` is `static`   |
-| `gateway`     | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                              |                N                |
-
+| `bring_up`    | boolean         | `{{ network_management_default_bring_up }}`     | Automatically bring interface link up                                                     | N                               |
+| `type`        | [string](#type) | `{{ network_management_default_type }}`         | Specify how the network interface should be configured                                    | N                               |
+| `dhcp`        | [dict](#dhcp)   | `{{ network_management_default_dhcp_options }}` | Additional options for dhcp interfaces                                                    | N                               |
+| `nameservers` | list of strings | `{{ network_management_nameservers }}`          | Nameservers to use                                                                        | N                               |
+| `mtu`         | integer         |                                                 | MTU size                                                                                  | N                               |
+| `ip`          | string          |                                                 | IP address to assign as IP with CIDR suffix                                               | N                               |
+| `ips`         | list of strings |                                                 | IP addresses to assign (IP address with CIDR suffix)                                      | only if `type` is `static`      |
+| `gateway`     | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                              | N                               |
 
 ### bridges
 Beside every option from the [interfaces](#interfaces) dict, the following options can be specified:
@@ -74,17 +64,23 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 |---------|------------------------|---------|--------------------------------------------------|:--------:|
 | `ports` | [list of dicts](#port) | `[]`    | List of physical interfaces to add to the bridge |     N    |
 
-
 ### patch_field
 | Option      | Type   | Default | Description                                                   | Required |
 |-------------|--------|---------|---------------------------------------------------------------|:--------:|
 | ___key___   | string |         | First port or interface in between the link should be made    | Y        |
 | ___value___ | string |         | Second port or interfaces in between the link should be made  | Y        |
 
+### port
+| Option | Type    | Default | Description                                         | Required |
+|--------|---------|---------|-----------------------------------------------------|:--------:|
+| port   | string  |         | Interface name to add to bridge                     |     Y    |
+| vlan   | integer |         | Add the port with specified vlan to selected bridge |     N    |
+
 
 ## ToDo
 * Implement script based network configuration
 * Implement systemd networkd based network configuration
+
 
 ## License
 
