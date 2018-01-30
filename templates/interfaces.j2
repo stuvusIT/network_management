@@ -8,7 +8,7 @@ pre-up {{ network_management_pre_up }}
 auto lo
 iface lo inet loopback
 
-{% if network_management_clear_bridges %}
+{% if bridges|length > 0 and network_management_clear_bridges %}
 # Delete all network bridges
 pre-up for br in `ovs-vsctl list-br`; do ovs-vsctl --if-exists "$br"; done
 {% endif %}
@@ -123,7 +123,7 @@ post-up ovs-vsctl {{''
 {% if network_management_default_gateway is defined %}
 
 
-post-up ip r replace default via {{ network_management_default_gateway }}
+post-up ip r replace default via {{ network_management_default_gateway }}{% if network_management_default_src_address is defined %} src {{ network_management_default_src_address }}{% endif %}
 {% endif %}
 {% if network_management_post_up is defined %}
 post-up {{ network_management_post_up }}
