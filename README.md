@@ -13,7 +13,6 @@ A Linux distribution with debian networking support or systemd as init system.
 ### Primary
 | Option                                    | Type                               | Default                  | Description                                                                                                                                                       | Required |
 |-------------------------------------------|------------------------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|
-| `network_management_always_script`        | boolean                            | `False`                  | Always generate a systemd service and network management script (overwrites networking.service if it exists)                                                      |     N    |
 | `network_management_default_type`         | [string](#type)                    | `dhcp`                   | Default type to setup a interface or bridge                                                                                                                       |     N    |
 | `network_management_default_bring_up`     | boolean                            | `True`                   | Bring interface up on start                                                                                                                                       |     N    |
 | `network_management_default_dhcp_options` | [dict](#dhcp)                      | `{}`                     | Additional options for dhcp interfaces                                                                                                                            |     N    |
@@ -81,11 +80,6 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 |-------------|--------|---------|---------------------------------------------------------------|:--------:|
 | ___key___   | string |         | First port or interface in between the link should be made    | Y        |
 | ___value___ | string |         | Second port or interfaces in between the link should be made  | Y        |
-
-
-## ToDo
-* Implement script based network configuration
-* Implement systemd networkd based network configuration
 
 
 ## License
