@@ -5,7 +5,7 @@
   changed_when: false
   when: ansible_pkg_mgr == "apt"
 
-- name: Install openvswitch
+- name: Install openvswitch packages
   apt:
     name: "{{ item }}"
   with_items:
