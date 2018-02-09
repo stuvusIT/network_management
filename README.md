@@ -44,18 +44,21 @@ Defines how a network or bridge should be configured. Possible values are:
 | `metric`    | integer |                          | Metrics are used to prefer an interface over another one, lowest wins.             |     N    |
 
 ### interfaces
-| Option        | Type            | Default                                         | Description                                                                               | Required                        |
-|---------------|-----------------|-------------------------------------------------|-------------------------------------------------------------------------------------------|:-------------------------------:|
-| `name`        | string          |                                                 | Name of the interface to configure, ignored if `mac` is specified                         | only if `mac` is not specified  |
-| `mac`         | string          |                                                 | MAC-Address of the interface to configure. If `name` is specified, `mac` is autodetected. | only if `name` is not specified |
-| `bring_up`    | boolean         | `{{ network_management_default_bring_up }}`     | Automatically bring interface link up                                                     | N                               |
-| `type`        | [string](#type) | `{{ network_management_default_type }}`         | Specify how the network interface should be configured                                    | N                               |
-| `dhcp`        | [dict](#dhcp)   | `{{ network_management_default_dhcp_options }}` | Additional options for dhcp interfaces                                                    | N                               |
-| `nameservers` | list of strings | `{{ network_management_nameservers }}`          | Nameservers to use                                                                        | N                               |
-| `mtu`         | integer         |                                                 | MTU size                                                                                  | N                               |
-| `ip`          | string          |                                                 | IP address to assign as IP with CIDR suffix                                               | N                               |
-| `ips`         | list of strings |                                                 | IP addresses to assign (IP address with CIDR suffix)                                      | only if `type` is `static`      |
-| `gateway`     | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                              | N                               |
+| Option        | Type            | Default                                         | Description                                                                                               |             Required            |
+|---------------|-----------------|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------|:-------------------------------:|
+| `name`        | string          |                                                 | Name of the interface to configure, ignored if `mac` is specified                                         |  only if `mac` is not specified |
+| `mac`         | string          |                                                 | MAC-Address of the interface to configure. If `name` is specified, `mac` is autodetected.                 | only if `name` is not specified |
+| `bring_up`    | boolean         | `{{ network_management_default_bring_up }}`     | Automatically bring interface link up                                                                     |                N                |
+| `type`        | [string](#type) | `{{ network_management_default_type }}`         | Specify how the network interface should be configured                                                    |                N                |
+| `dhcp`        | [dict](#dhcp)   | `{{ network_management_default_dhcp_options }}` | Additional options for dhcp interfaces                                                                    |                N                |
+| `nameservers` | list of strings | `{{ network_management_nameservers }}`          | Nameservers to use                                                                                        |                N                |
+| `mtu`         | integer         |                                                 | MTU size                                                                                                  |                N                |
+| `ip`          | string          |                                                 | IP address to assign as IP with CIDR suffix                                                               |                N                |
+| `ips`         | list of strings |                                                 | IP addresses to assign (IP address with CIDR suffix)                                                      |    only if `type` is `static`   |
+| `gateway`     | string          | `{{ network_management_default_gateway }}`      | Add a default route via this gateway address                                                              |                N                |
+| `hostname`    | string          | `{{ ansible_hostname }}`                        | Hostname to be requested (is ignored in `network_management_default_dhcp_options`). Only dhcp interfaces. |                N                |
+| `leasetime`   | integer         |                                                 | Request a specific lease time in seconds. Only dhcp interfaces.                                           |                N                |
+| `metric`      | integer         |                                                 | Metrics are used to prefer an interface over another one, lowest wins. Only dhcp interfaces.              |                N                |
 
 ### bridges
 Beside every option from the [interfaces](#interfaces) dict, the following options can be specified:
