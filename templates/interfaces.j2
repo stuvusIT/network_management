@@ -71,7 +71,7 @@ iface {{ port.port }} inet manual
 auto {{ bridge.name }}
 {% endif -%}
 iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_type) }}
-{% if interface.mtu is defined or network_management_default_mtu is defined %}	mtu {{ interface.mtu|network_management_default_mtu }}{% endif %}
+{% if bridge.mtu is defined or network_management_default_mtu is defined %}	mtu {{ bridge.mtu|network_management_default_mtu }}{% endif %}
 	pre-up ovs-vsctl --may-exist add-br {{ bridge.name }}{% if bridge.parent is defined %} {{ bridge.parent }} {{ bridge.vlan }}{% endif %}{{ '' }}
 {% for port in bridge.ports | default({}) %}
 	pre-up ovs-vsctl --may-exist add-port {{ bridge.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}{{ '' }}
