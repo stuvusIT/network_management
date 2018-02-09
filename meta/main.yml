@@ -11,11 +11,6 @@ galaxy_info:
     - ovs
   platforms:
     - name: Ubuntu
-      versions:
-        - xenial
-        - yakkety
-        - zesty
-        - artful
-
+    - name: Debian
 
 dependencies: []
