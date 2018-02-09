@@ -1,5 +1,4 @@
 ---
-
 - name: Auto detect interface names
   set_fact:
     interfaces: |
