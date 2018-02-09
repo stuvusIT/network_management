@@ -37,6 +37,7 @@
   template:
     src: interfaces.j2
     dest: /etc/network/interfaces
+  notify: reload_network
   when: ansible_os_family == "Debian" and not network_management_always_script
 
 - meta: flush_handlers
