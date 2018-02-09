@@ -33,6 +33,48 @@
       {%- endif -%}{% if not loop.last %},{% endif %}
       {%- endfor -%}]
 
+- name: Append default CIDR if not already specified (interfaces)
+  set_fact:
+    interfaces: |
+      [{%- for item in interfaces -%}
+      {%- set n_ips=[] -%}
+      {%- for ip in item['ips'] -%}
+        {%- if ip|search("/[0-9]*") -%}
+          {%- set n_ip=ip -%}
+        {%- else -%}
+          {%- set n_ip=ip+network_management_default_cidr -%}
+        {%- endif -%}
+        {%- set n_ips=n_ips|union([n_ip]) -%}
+        {%- if loop.last -%}
+          {{ item|combine({"ips":n_ips}) }}
+        {%- endif -%}
+      {%- else -%}
+        {{ item|combine({"ips":n_ips}) }}
+      {%- endfor -%}
+      {%- if not loop.last -%},{%- endif -%}
+      {%- endfor -%}]
+
+- name: Append default CIDR if not already specified (bridges)
+  set_fact:
+    bridges: |
+      [{%- for item in bridges -%}
+      {%- set n_ips=[] -%}
+      {%- for ip in item['ips'] -%}
+        {%- if ip|search("/[0-9]*") -%}
+          {%- set n_ip=ip -%}
+        {%- else -%}
+          {%- set n_ip=ip+network_management_default_cidr -%}
+        {%- endif -%}
+        {%- set n_ips=n_ips|union([n_ip]) -%}
+        {%- if loop.last -%}
+          {{ item|combine({"ips":n_ips}) }}
+        {%- endif -%}
+      {%- else -%}
+        {{ item|combine({"ips":n_ips}) }}
+      {%- endfor -%}
+      {%- if not loop.last -%},{%- endif -%}
+      {%- endfor -%}]
+
 - name: Configure Debian networking
   template:
     src: interfaces.j2
