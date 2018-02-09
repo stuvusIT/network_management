@@ -42,8 +42,8 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 	network {{ ip | ipaddr('network') }}
 	netmask {{ ip | ipaddr('netmask') }}
 	broadcast {{ interface.broadcast|default(ip | ipaddr('broadcast')) }}
-{% if interface.gateway is defined or network_management_default_gateway is defined %}
-	gateway {{ interface.gateway|default(network_management_default_gateway )|ipaddr('address') }}
+{% if interface.gateway is defined %}
+	gateway {{ interface.gateway|ipaddr('address') }}
 {% endif %}
 {% endfor %}
 {% endif %}
@@ -95,8 +95,8 @@ iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_t
 	network {{ ip | ipaddr('network') }}
 	netmask {{ ip | ipaddr('netmask') }}
 	broadcast {{ bridge.broadcast|default(ip | ipaddr('broadcast')) }}
-{% if bridge.gateway is defined or network_management_default_gateway is defined %}
-	gateway {{ bridge.gateway|default(network_management_default_gateway )|ipaddr('address') }}
+{% if bridge.gateway is defined %}
+	gateway {{ bridge.gateway|ipaddr('address') }}
 {% endif %}
 {% endfor %}{# end: additional ips #}
 {% endif %}
