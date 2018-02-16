@@ -1,8 +1,14 @@
 # {{ ansible_managed }}
 
 {% if network_management_pre_up is defined %}
-pre-up {{ network_management_pre_up }}
 
+# execute user defined pre-up commands
+pre-up {{ network_management_pre_up }}
+{% endif %}
+{% if network_management_pre_down is defined %}
+
+# execute user defined pre-down commands
+pre-down {{ network_management_pre_down }}
 {% endif %}
 
 auto lo
@@ -124,9 +130,16 @@ post-up ovs-vsctl {{''
 {% endif %}{# end: if bridges #}
 {% if network_management_default_gateway is defined %}
 
-
+# set default route
 post-up ip r replace default via {{ network_management_default_gateway }}{% if network_management_default_src_address is defined %} src {{ network_management_default_src_address }}{% endif %}
 {% endif %}
+{% if network_management_post_down is defined %}
+
+# execute user defined post-down command
+post-down {{ network_management_post_down }}
+{% endif %}
 {% if network_management_post_up is defined %}
+
+# execute user defined post-up command
 post-up {{ network_management_post_up }}
 {% endif %}
