@@ -2,12 +2,12 @@
 
 {% if network_management_pre_up is defined %}
 
-# execute user defined pre-up commands
+# execute user-defined pre-up commands
 pre-up {{ network_management_pre_up }}
 {% endif %}
 {% if network_management_pre_down is defined %}
 
-# execute user defined pre-down commands
+# execute user-defined pre-down commands
 pre-down {{ network_management_pre_down }}
 {% endif %}
 
@@ -137,11 +137,11 @@ post-up ip r replace default via {{ network_management_default_gateway }}{% if n
 {% endif %}
 {% if network_management_post_down is defined %}
 
-# execute user defined post-down command
+# execute user-defined post-down command
 post-down {{ network_management_post_down }}
 {% endif %}
 {% if network_management_post_up is defined %}
 
-# execute user defined post-up command
+# execute user-defined post-up command
 post-up {{ network_management_post_up }}
 {% endif %}
