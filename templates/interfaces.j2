@@ -80,7 +80,9 @@ iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_t
 {% if bridge.mtu is defined or network_management_default_mtu is defined %}	mtu {{ bridge.mtu|default(network_management_default_mtu) }}{% endif %}
 	pre-up ovs-vsctl --may-exist add-br {{ bridge.name }}{% if bridge.parent is defined %} {{ bridge.parent }} {{ bridge.vlan }}{% endif %}{{ '' }}
 {% for port in bridge.ports | default({}) %}
-	pre-up ovs-vsctl --may-exist add-port {{ bridge.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif %}{{ '' }}
+	pre-up ovs-vsctl --may-exist add-port {{ bridge.name }} {{ port.port }}{% if port.vlan is defined %} tag={{ port.vlan }}{% endif -%}
+	{%- if port.type is defined or network_management_default_port_type is defined %} -- set interface {{ port.port }} type={{ port.type|default(network_management_default_port_type) -}}
+	{%- if port.options is defined or network_management_default_port_options is defined %} options:{{ port.options|default(network_management_default_port_options)|join(' options:') }}{% endif %}{% endif %}{{ '' }}
 {% endfor %}
 {% if bridge.type|default(network_management_default_type) == "dhcp" %}
 	hostname {{ bridge.hostname|default(ansible_hostname) }}
