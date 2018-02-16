@@ -3,7 +3,7 @@
   apt:
     update_cache: yes
   changed_when: false
-  when: ansible_pkg_mgr == "apt"
+  when: ansible_pkg_mgr == "apt" and bridges|length > 0
 
 - name: Install openvswitch packages
   apt:
