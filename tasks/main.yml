@@ -1,3 +1,5 @@
 ---
 - import_tasks: packages.yml
+  tags: network_management
 - import_tasks: interfaces.yml
+  tags: network_management
