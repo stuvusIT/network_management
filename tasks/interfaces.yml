@@ -75,6 +75,16 @@
       {%- if not loop.last -%},{%- endif -%}
       {%- endfor -%}]
 
+- name: Make sure openvswitch and networking bootorder is correct (1/2)
+  file:
+    path: /etc/systemd/system/networking.service.d/
+    state: directory
+
+- name: Make sure openvswitch and networking bootorder is correct (2/2)
+  template:
+    src: networking.service.j2
+    dest: /etc/systemd/system/networking.service.d/override.conf
+
 - name: Configure Debian networking
   template:
     src: interfaces.j2
