@@ -172,10 +172,13 @@ post-up ip r replace default via {{ network_management_default_gateway }}{% if n
 	-%}
 post-up ip route replace {{ route_net }}
 	{%- if route_options.gateway is defined %} via {{ route_options.gateway }}{%- endif %}
-	{%- if route_options.interface is defined %} dev {{route_options.interface }}{%- endif %}
-	{%- if route_options.source is defined %} src {{route_options.source }}{%- endif %}
-	{%- if route_options.metric is defined %} metric {{route_options.metric }}{%- endif %}
-	{%- if route_options.mtu is defined %} mtu {{route_options.mtu }}{%- endif %}{{ "\n" }}
+	{%- if route_options.interface is defined %} dev {{ route_options.interface }}{%- endif %}
+	{%- if route_options.source is defined %} src {{ route_options.source }}{%- endif %}
+	{%- if route_options.metric is defined %} metric {{ route_options.metric }}{%- endif %}
+	{%- if
+	route_options.mtu is defined or
+	network_management_default_mtu is defined
+	%} mtu {{ route_options.mtu|default(network_management_default_mtu) }}{%- endif %}{{ "\n" }}
 
 	{%- endif %}
 {% endfor %}
