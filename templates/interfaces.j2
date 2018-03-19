@@ -1,5 +1,16 @@
+################################################################################
 # {{ ansible_managed }}
+#-------------------------------------------------------------------------------
+# General and pre configuration
+################################################################################
+# loop back interface
+auto lo
+iface lo inet loopback
+{% if bridges|length > 0 and network_management_clear_bridges %}
 
+# Delete all network bridges
+pre-up for br in `ovs-vsctl list-br`; do ovs-vsctl --if-exists del-br "$br"; done
+{% endif %}
 {% if network_management_pre_up is defined %}
 
 # execute user-defined pre-up commands
@@ -10,18 +21,11 @@ pre-up {{ network_management_pre_up }}
 # execute user-defined pre-down commands
 pre-down {{ network_management_pre_down }}
 {% endif %}
-
-auto lo
-iface lo inet loopback
-
-{% if bridges|length > 0 and network_management_clear_bridges %}
-# Delete all network bridges
-pre-up for br in `ovs-vsctl list-br`; do ovs-vsctl --if-exists del-br "$br"; done
-{% endif %}
 {% if interfaces|length > 0 %}
 
+
 ################################################################################
-# Configure all network interfaces                                             #
+# Configure all network interfaces
 ################################################################################
 {% endif %}
 {% for interface in interfaces %}{% if interface.name is defined %}
@@ -63,8 +67,9 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 {% endif %}{% endfor %}
 {% if bridges|length > 0 %}
 
+
 ################################################################################
-# Configure all network bridges                                                #
+# Configure all network bridges
 ################################################################################
 # Bring up all ports for all bridges
 {% for bridge in bridges %}
@@ -126,10 +131,12 @@ iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_t
 {% endfor %}
 {% if patch_field is defined %}
 
+
 ################################################################################
-# OpenVswitch Patchfield, connect requested ports together                     #
+# OpenVswitch Patchfield, connect requested ports together
 ################################################################################
 {% for patch_field_dev_in, patch_field_dev_out in patch_field.iteritems() %}
+# link between {{ patch_field_dev_in }} and {{ patch_field_dev_out }}
 post-up ovs-vsctl {{''
 	-}} --may-exist add-port {{ patch_field_dev_in }} {{ patch_field_dev_in }}_patch_{{ loop.index }} -- {{''
 	-}} set interface {{ patch_field_dev_in }}_patch_{{ loop.index }} type=patch options:peer={{ patch_field_dev_out }}_patch_{{ loop.index }} -- {{''
@@ -138,12 +145,53 @@ post-up ovs-vsctl {{''
 {% endfor %}
 {% endif %}{# end: if patch_field #}
 {% endif %}{# end: if bridges #}
-{% if network_management_default_gateway is defined %}
+{% if network_management_default_gateway is defined or network_management_routes is defined %}{# start: routes #}
 
+
+################################################################################
+# Routing
+################################################################################
+{% if network_management_default_gateway is defined %}
 # set default route
 post-up ip r replace default via {{ network_management_default_gateway }}{% if network_management_default_src_address is defined %} src {{ network_management_default_src_address }}{% endif %}
 {% endif %}
+{% if network_management_routes is defined %}
+
+
+# set additional routes
+{% for route_net, route_options in network_management_routes.iteritems() %}
+	{%- if not route_net|search("/[0-9]*") -%}
+          {%- set route_net=route_net+"/32" -%}
+	{%- endif -%}
+	{%- if
+		route_options.gateway is defined or
+		route_options.interface is defined or
+		route_options.source is defined or
+		route_options.metric is defined or
+		route_options.mtu is defined
+	-%}
+post-up ip route replace {{ route_net }}
+	{%- if route_options.gateway is defined %} via {{ route_options.gateway }}{%- endif %}
+	{%- if route_options.interface is defined %} dev {{ route_options.interface }}{%- endif %}
+	{%- if route_options.source is defined %} src {{ route_options.source }}{%- endif %}
+	{%- if route_options.metric is defined %} metric {{ route_options.metric }}{%- endif %}
+	{%- if
+	route_options.mtu is defined or
+	network_management_default_mtu is defined
+	%} mtu {{ route_options.mtu|default(network_management_default_mtu) }}{%- endif %}{{ "\n" }}
+
+	{%- endif %}
+{% endfor %}
+{% endif %}
+{% endif %}{# end: routes #}
+{% if network_management_post_down is defined or network_management_post_up is defined %}{# start: post config #}
+
+
+################################################################################
+# Post configuration
+################################################################################
 {% if network_management_post_down is defined %}
+
 
 # execute user-defined post-down command
 post-down {{ network_management_post_down }}
@@ -153,3 +201,4 @@ post-down {{ network_management_post_down }}
 # execute user-defined post-up command
 post-up {{ network_management_post_up }}
 {% endif %}
+{% endif %}{# end: post config #}

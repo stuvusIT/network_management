@@ -32,6 +32,7 @@ A Linux distribution with debian networking support or systemd as init system.
 | `interfaces`                              | [list of dicts](#interfaces)       | `[]`                     | List of all interfaces to setup, keep in mind it can cause various errors if you configure a interface here and later use it as a port on a bridge                  |     N    |
 | `bridges`                                 | [list of dicts](#bridges)          | `[]`                     | List of network bridges to setup (all bridges are managed by openvswitch)                                                                                           |     N    |
 | `patch_field`                             | [list of key values](#patch_field) | `[]`                     | A list of network interfaces or bridge ports to patch together (ex. wire/patch one bridge port with one vlan to another bridge with a different vlan)               |     N    |
+| `network_management_routes`               | [dict](#network_management_routes) |                          | A list of additional routes to set                                                                                                                                  |     N    |
 
 ### type
 Defines how a network or bridge should be configured. Possible values are:
@@ -86,6 +87,21 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 |-------------|--------|---------|--------------------------------------------------------------|:--------:|
 | ___key___   | string |         | First port or interface in between the link should be made   |     Y    |
 | ___value___ | string |         | Second port or interfaces in between the link should be made |     Y    |
+
+### network_management_routes
+| Option      | Type                   | Default | Description                                     | Required |
+|-------------|------------------------|---------|-------------------------------------------------|:--------:|
+| ___key___   | string                 |         | IP address or IP network as CIDR                |     Y    |
+| ___value___ | [dict](#route_options) |         | Route option to set for specified network or IP |     Y    |
+
+#### route_options
+| Option    | Type    | Default                               | Description                                                                                               | Required |
+|-----------|---------|---------------------------------------|-----------------------------------------------------------------------------------------------------------|:--------:|
+| gateway   | string  |                                       | IP address to use as gateway                                                                              |     N    |
+| interface | string  |                                       | Interface/device to us to forward traffic                                                                 |     N    |
+| source    | string  |                                       | Source IP address to us to forward traffic                                                                |     N    |
+| metric    | integer |                                       | Metric to use for this route definition                                                                   |     N    |
+| mtu       | integer | `{{ network_management_default_mtu}}` | MTU to use for this route, this is done by iptroute2 (ex. `ip route add 1.2.3.4/32 via 1.1.1.1 mtu 1500`) |     N    |
 
 
 ## License
