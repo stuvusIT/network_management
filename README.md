@@ -91,7 +91,7 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 ### network_management_routes
 | Option      | Type                   | Default | Description                                     | Required |
 |-------------|------------------------|---------|-------------------------------------------------|:--------:|
-| ___key___   | string                 |         | IP address or IP network as CIDR                |     N    |
+| ___key___   | string                 |         | IP address or IP network as CIDR                |     Y    |
 | ___value___ | [dict](#route_options) |         | Route option to set for specified network or IP |     Y    |
 
 #### route_options
