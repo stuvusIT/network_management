@@ -5,7 +5,7 @@
   poll: 0
   ignore_errors: true
   notify: Wait for server to come back online
-  when: network_management_reboot_for_config
+  when: network_management_reboot_for_config and not network_management_plain_run
   listen: reload_network
 
 - name: Wait for server to come back online
@@ -23,4 +23,4 @@
     name: networking
     state: restarted
   listen: reload_network
-  when: not network_management_reboot_for_config
+  when: not network_management_reboot_for_config and not network_management_plain_run
