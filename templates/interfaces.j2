@@ -30,7 +30,7 @@ pre-down {{ network_management_pre_down }}
 {% endif %}
 {% for interface in interfaces %}{% if interface.name is defined %}
 {% if interface.bring_up|default(network_management_default_bring_up) %}
-auto {{ interface.name }}
+{% if interface.allow_hotplug|default(network_management_default_allow_hotplug) %}allow-hotplug{% else %}auto{% endif %} {{ interface.name }}
 {% endif -%}
 iface {{ interface.name }} inet {{ interface.type|default(network_management_default_type) }}
 {% if interface.mtu is defined or network_management_default_mtu is defined %}
@@ -74,7 +74,7 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 # Bring up all ports for all bridges
 {% for bridge in bridges %}
 {% for port in bridge.ports | default({}) %}
-auto {{ port.port }}
+{% if port.allow_hotplug|default(network_management_default_allow_hotplug) %}allow-hotplug{% else %}auto{% endif %} {{ port.port }}
 iface {{ port.port }} inet manual
 
 {% endfor %}
@@ -83,7 +83,7 @@ iface {{ port.port }} inet manual
 # Bring all openvswitch bridges up and configure ovs
 {% for bridge in bridges %}
 {% if bridge.bring_up|default(network_management_default_bring_up) %}
-auto {{ bridge.name }}
+{% if bridge.allow_hotplug|default(network_management_default_allow_hotplug) %}allow-hotplug{% else %}auto{% endif %} {{ bridge.name }}
 {% endif -%}
 iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_type) }}
 {% if bridge.mtu is defined or network_management_default_mtu is defined %}
