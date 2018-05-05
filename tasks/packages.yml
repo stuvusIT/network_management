@@ -13,7 +13,7 @@
     - openvswitch-common
   when: bridges|length > 0
 
-- name: Install ifupdown2
+- name: Install ifupdown
   apt:
-    name: ifupdown2
+    name: ifupdown
   when: ansible_pkg_mgr == "apt"
