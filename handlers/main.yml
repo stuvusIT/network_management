@@ -1,5 +1,5 @@
 ---
-- name: Reboot server
+- name: Reboot server {{ ansible_hostname }}
   shell: sleep 2 && shutdown -r now "Ansible - network configuration changed"
   async: 1
   poll: 0
@@ -8,7 +8,7 @@
   when: network_management_reboot_for_config and not network_management_plain_run
   listen: reload_network
 
-- name: Wait for server to come back online
+- name: Wait for {{ ansible_hostname }} to come back online
   wait_for:
     host: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
     delay: 30
@@ -18,7 +18,7 @@
   become: false
   when: network_management_reboot_for_config
 
-- name: Restart networking.service
+- name: Restart networking.service on {{ ansible_hostname }}
   service:
     name: networking
     state: restarted
