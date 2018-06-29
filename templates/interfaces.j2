@@ -202,3 +202,11 @@ post-down {{ network_management_post_down }}
 post-up {{ network_management_post_up }}
 {% endif %}
 {% endif %}{# end: post config #}
+
+
+################################################################################
+# sysctl operations
+################################################################################
+pre-up sysctl -w net.ipv6.conf.default.disable_ipv6={{ network_management_disable_ipv6 | int }}
+pre-up sysctl -w net.ipv6.conf.all.disable_ipv6={{ network_management_disable_ipv6 | int }}
+post-up sysctl -w net.ipv4.ip_forward={{ network_management_ipv4_forwarding | int }}
