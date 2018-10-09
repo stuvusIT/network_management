@@ -7,7 +7,9 @@
       {%- set ips=item['ips']|default([])|union(f_ip_a)|unique -%}{# concat ip field to list of all ips #}
       {%- if 'mac' in item -%}
         {%- for interface in ansible_interfaces -%}{# only check real interfaces #}
-          {%- if "ansible_"+interface in hostvars[ansible_hostname] and hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
+        {%- if "ansible_"+interface in hostvars[ansible_hostname] and
+               hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower and
+               hostvars[ansible_hostname]["ansible_"+interface]['type'] == "ether" -%}
             {{ item|combine({"name":interface,"ips":ips}) }}
           {%- endif -%}
         {%- endfor -%}
@@ -24,7 +26,9 @@
       {%- set ips=item['ips']|default([])|union(f_ip_a)|unique -%}{# concat ip field to list of all ips #}
       {%- if 'mac' in item -%}
         {%- for interface in ansible_interfaces -%}{# only check real interfaces #}
-          {%- if "ansible_"+interface in hostvars[ansible_hostname] and hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower -%}
+        {%- if "ansible_"+interface in hostvars[ansible_hostname] and
+               hostvars[ansible_hostname]["ansible_"+interface]['macaddress']|default(None)|lower == item["mac"]|default(None)|lower and
+               hostvars[ansible_hostname]["ansible_"+interface]['type'] == "ether" -%}
             {{ item|combine({"name":interface,"ips":ips}) }}
           {%- endif -%}
         {%- endfor -%}
