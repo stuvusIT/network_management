@@ -1,10 +1,9 @@
 ---
 - name: Install openvswitch packages
   apt:
-    name: "{{ item }}"
-  with_items:
-    - openvswitch-switch
-    - openvswitch-common
+    name:
+      - openvswitch-switch
+      - openvswitch-common
   when: bridges|length > 0
 
 - name: Install ifupdown
