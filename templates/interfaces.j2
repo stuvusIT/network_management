@@ -135,7 +135,7 @@ iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_t
 ################################################################################
 # OpenVswitch Patchfield, connect requested ports together
 ################################################################################
-{% for patch_field_dev_in, patch_field_dev_out in patch_field.iteritems()|sort %}
+{% for patch_field_dev_in, patch_field_dev_out in patch_field.items()|sort %}
 # link between {{ patch_field_dev_in }} and {{ patch_field_dev_out }}
 post-up ovs-vsctl {{''
 	-}} --may-exist add-port {{ patch_field_dev_in }} {{ patch_field_dev_in }}_patch_{{ loop.index }} -- {{''
@@ -159,8 +159,8 @@ post-up ip r replace default via {{ network_management_default_gateway }}{% if n
 
 
 # set additional routes
-{% for route_net, route_options in network_management_routes.iteritems()|sort %}
-	{%- if not route_net|search("/[0-9]*") -%}
+{% for route_net, route_options in network_management_routes.items()|sort %}
+	{%- if not route_net is search("/[0-9]*") -%}
           {%- set route_net=route_net+"/32" -%}
 	{%- endif -%}
 	{%- if
