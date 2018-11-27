@@ -64,7 +64,7 @@
       [{%- for item in bridges -%}
       {%- set n_ips=[] -%}
       {%- for ip in item['ips'] -%}
-        {%- if ip|search("/[0-9]*") -%}
+        {%- if ip is search("/[0-9]*") -%}
           {%- set n_ip=ip -%}
         {%- else -%}
           {%- set n_ip=ip+network_management_default_cidr -%}
