@@ -74,12 +74,14 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 # Bring up all ports for all bridges
 {% for bridge in bridges %}
 {% for port in bridge.ports | default({}) %}
+{% if not port.type is defined %}
 {% if port.allow_hotplug|default(network_management_default_allow_hotplug) %}allow-hotplug{% else %}auto{% endif %} {{ port.port }}
 iface {{ port.port }} inet manual
 {% if bridge.mtu is defined or network_management_default_mtu is defined %}
 	mtu {{ bridge.mtu|default(network_management_default_mtu) }}
 {% endif %}
 
+{% endif %}
 {% endfor %}
 {% endfor %}
 
