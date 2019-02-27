@@ -1,0 +1,13 @@
+#
+# reserved values
+#
+255	local
+254	main
+253	default
+0	unspec
+#
+# local
+#
+{% for tablename, table in network_management_tables.iteritems()|sort %}
+{{ '%d\t%s'|format(table.id, tablename) }}
+{% endfor %}
