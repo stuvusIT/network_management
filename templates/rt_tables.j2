@@ -8,6 +8,6 @@
 #
 # local
 #
-{% for tablename, table in network_management_tables.iteritems()|sort %}
+{% for tablename, table in network_management_tables.items()|sort %}
 {{ '%d\t%s'|format(table.id, tablename) }}
 {% endfor %}

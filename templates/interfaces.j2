@@ -164,7 +164,7 @@ post-up ip r replace default via {{ network_management_default_gateway }}{% if n
 
 
 # add routing table rules
-{% for tablename, table in network_management_tables.iteritems()|sort %}
+{% for tablename, table in network_management_tables.items()|sort %}
 {% for rule in table.rules|default([]) %}
 post-up ip rule add
 	{%- if rule.type is defined %} type {{ rule.type }}{% endif %}
