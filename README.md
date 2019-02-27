@@ -35,6 +35,7 @@ A Linux distribution with debian networking support or systemd as init system.
 | `bridges`                                  | [list of dicts](#bridges)          | `[]`                     | List of network bridges to setup (all bridges are managed by openvswitch)                                                                                           |     N    |
 | `patch_field`                              | [list of key values](#patch_field) | `[]`                     | A list of network interfaces or bridge ports to patch together (ex. wire/patch one bridge port with one vlan to another bridge with a different vlan)               |     N    |
 | `network_management_routes`                | [dict](#network_management_routes) |                          | A list of additional routes to set                                                                                                                                  |     N    |
+| `network_management_tables`                | [dict](#network_management_tables) | `{}`                     | A list of all custom routing tables                                                                                                                                 |     N    |
 | `network_management_disable_ipv6`          | boolean                            | `False`                  | Disables IPv6                                                                                                                                                       |     N    |
 | `network_management_ipv4_forwarding`       | boolean                            | `False`                  | Enables IPv4 forwarding                                                                                                                                             |     N    |
 
@@ -104,11 +105,39 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 #### route_options
 | Option    | Type    | Default                               | Description                                                                                               | Required |
 |:----------|:--------|:--------------------------------------|:----------------------------------------------------------------------------------------------------------|:--------:|
-| gateway   | string  |                                       | IP address to use as gateway                                                                              |    N     |
-| interface | string  |                                       | Interface/device to us to forward traffic                                                                 |    N     |
-| source    | string  |                                       | Source IP address to us to forward traffic                                                                |    N     |
-| metric    | integer |                                       | Metric to use for this route definition                                                                   |    N     |
-| mtu       | integer | `{{ network_management_default_mtu}}` | MTU to use for this route, this is done by iptroute2 (ex. `ip route add 1.2.3.4/32 via 1.1.1.1 mtu 1500`) |    N     |
+| gateway   | string  |                                       | IP address to use as gateway                                                                              |     N    |
+| interface | string  |                                       | Interface/device to us to forward traffic                                                                 |     N    |
+| source    | string  |                                       | Source IP address to us to forward traffic                                                                |     N    |
+| metric    | integer |                                       | Metric to use for this route definition                                                                   |     N    |
+| mtu       | integer | `{{ network_management_default_mtu}}` | MTU to use for this route, this is done by iptroute2 (ex. `ip route add 1.2.3.4/32 via 1.1.1.1 mtu 1500`) |     N    |
+
+### network_management_tables
+| Option      | Type                           | Default | Description                      | Required |
+|:------------|:-------------------------------|:--------|:---------------------------------|:--------:|
+| ___key___   | string                         |         | Name of the custom routing table |     Y    |
+| ___value___ | [dict](#routing_table_options) |         | Routing table options            |     Y    |
+
+
+#### routing_table_options
+For additional information see [iproute2 documentation](http://www.policyrouting.org/iproute2.doc.html#ss9.6).
+
+| Option | Type                                  | Default | Description                                            | Required |
+|:-------|:--------------------------------------|:--------|:-------------------------------------------------------|:--------:|
+| id     | integer                               |         | routing table identifier                               |     Y    |
+| rules  | [list of dicts](#routing_table_rules) |         | rules to identify traffic to be routed with this table |     N    |
+
+#### routing_table_rules
+| Option    | Type            | Default | Description                                                                          | Required |
+|:----------|:----------------|:--------|:-------------------------------------------------------------------------------------|:--------:|
+| type      | string          |         | type of this rule (one of `unicast`, `blackhole`, `unreachable`, `prohibit`, `nat`)  |     N    |
+| from      | string          |         | select source prefix to match                                                        |     N    |
+| to        | string          |         | select destination prefix to match                                                   |     N    |
+| interface | string          |         | incoming interface to match (`lo` for local traffic)                                 |     N    |
+| nat       | string          |         | the base of IP address block to translate source address                             |     N    |
+| tos       | integer/string  |         | select TOS value to match                                                            |     N    |
+| fwmark    | integer/string  |         | select value of fwmark to match                                                      |     N    |
+| priority  | integer (32bit) |         | priority of this rule. Each rule should have an explicitly set unique priority value |     N    |
+| realms    | string          |         | realms to select if the rule matched and routing table lookup succeeded              |     N    |
 
 
 ## License
