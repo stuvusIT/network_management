@@ -43,9 +43,9 @@ Defines how a network or bridge should be configured. Possible values are:
 
 | Value    | Description                            | Side effects                                  |
 |:---------|:---------------------------------------|:----------------------------------------------|
-| `manual` | Do nothing but bring up interface link | Ignore options `ips`, `default_gw` and `dhcp` |
+| `manual` | Do nothing but bring up interface link | Ignore options `ips`, `gateway` and `dhcp` |
 | `static` | Configure interface statically         | Ignore option `dhcp`                          |
-| `dhcp`   | Configure interface via dhcp           | Ignore option `ips` and `default_gw`          |
+| `dhcp`   | Configure interface via dhcp           | Ignore option `ips` and `gateway`          |
 
 ### dhcp
 | Option      | Type    | Default                  | Description                                                                        | Required |
