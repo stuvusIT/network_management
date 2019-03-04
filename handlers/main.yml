@@ -1,4 +1,9 @@
 ---
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  listen: reload_systemd
+
 - name: Reboot server
   shell: sleep 2 && shutdown -r now "Ansible - network configuration changed"
   async: 1
