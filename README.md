@@ -97,14 +97,15 @@ Beside every option from the [interfaces](#interfaces) dict, the following optio
 | ___value___ | string |         | Second port or interfaces in between the link should be made |    Y     |
 
 ### network_management_routes
-| Option    | Type    | Default                               | Description                                                                                               | Required |
-|:----------|:--------|:--------------------------------------|:----------------------------------------------------------------------------------------------------------|:--------:|
-| network   | string  |                                       | `default`, IP address or IP network to route                                                              |     Y    |
-| gateway   | string  |                                       | IP address to use as gateway                                                                              |     N    |
-| interface | string  |                                       | Interface/device to us to forward traffic                                                                 |     N    |
-| source    | string  |                                       | Source IP address to us to forward traffic                                                                |     N    |
-| metric    | integer |                                       | Metric to use for this route definition                                                                   |     N    |
-| mtu       | integer | `{{ network_management_default_mtu}}` | MTU to use for this route, this is done by iptroute2 (ex. `ip route add 1.2.3.4/32 via 1.1.1.1 mtu 1500`) |     N    |
+| Option    | Type           | Default                               | Description                                                                                               | Required |
+|:----------|:---------------|:--------------------------------------|:----------------------------------------------------------------------------------------------------------|:--------:|
+| network   | string         |                                       | `default`, IP address or IP network to route                                                              |     Y    |
+| gateway   | string         |                                       | IP address to use as gateway                                                                              |     N    |
+| interface | string         |                                       | Interface/device to us to forward traffic                                                                 |     N    |
+| source    | string         |                                       | Source IP address to us to forward traffic                                                                |     N    |
+| metric    | integer        |                                       | Metric to use for this route definition                                                                   |     N    |
+| table     | string/integer |                                       | Routing table to use for this route                                                                       |     N    |
+| mtu       | integer        | `{{ network_management_default_mtu}}` | MTU to use for this route, this is done by iptroute2 (ex. `ip route add 1.2.3.4/32 via 1.1.1.1 mtu 1500`) |     N    |
 
 ### network_management_tables
 | Option      | Type                           | Default | Description                      | Required |
