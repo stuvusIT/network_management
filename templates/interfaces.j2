@@ -160,30 +160,50 @@ post-up ovs-vsctl {{''
 # set default route
 post-up ip r replace default via {{ network_management_default_gateway }}{% if network_management_default_src_address is defined %} src {{ network_management_default_src_address }}{% endif %}
 {% endif %}
+{% if network_management_tables | length > 0 %}
+
+
+# add routing table rules
+{% for tablename, table in network_management_tables.items()|sort %}
+{% for rule in table.rules|default([]) %}
+post-up ip rule add
+	{%- if rule.type is defined %} type {{ rule.type }}{% endif %}
+	{%- if rule.from is defined %} from {{ rule.from }}{% endif %}
+	{%- if rule.to is defined %} to {{ rule.to }}{% endif %}
+	{%- if rule.interface is defined %} iif {{ rule.interface }}{% endif %}
+	{%- if rule.tos is defined %} tos {{ rule.tos }}{% endif %}
+	{%- if rule.fwmark is defined %} fwmark {{ rule.fwmark }}{% endif %}
+	{%- if rule.priority is defined %} priority {{ rule.priority }}{% endif %}
+	{%- if rule.realms is defined %} realms {{ rule.realms }}{% endif %}
+	{%- if rule.nat is defined %} nat {{ rule.nat }}{% endif %} table {{ tablename }}
+{% endfor %}
+{% endfor %}
+{% endif %}
 {% if network_management_routes is defined %}
 
 
 # set additional routes
-{% for route_net, route_options in network_management_routes.items()|sort %}
-	{%- if not route_net is search("/[0-9]*") -%}
-          {%- set route_net=route_net+"/32" -%}
+{% for route in network_management_routes %}
+	{%- if not route.network is search("/[0-9]*") and not route.network is search("default") -%}
+		{%- set _dummy = route.update({"network":route.network+"/32"}) -%}{# fucking ansible does not support the do statment :'( #}
 	{%- endif -%}
 	{%- if
-		route_options.gateway is defined or
-		route_options.interface is defined or
-		route_options.source is defined or
-		route_options.metric is defined or
-		route_options.mtu is defined
+		route.gateway is defined or
+		route.interface is defined or
+		route.source is defined or
+		route.metric is defined or
+		route.mtu is defined
 	-%}
-post-up ip route replace {{ route_net }}
-	{%- if route_options.gateway is defined %} via {{ route_options.gateway }}{%- endif %}
-	{%- if route_options.interface is defined %} dev {{ route_options.interface }}{%- endif %}
-	{%- if route_options.source is defined %} src {{ route_options.source }}{%- endif %}
-	{%- if route_options.metric is defined %} metric {{ route_options.metric }}{%- endif %}
+post-up ip route replace {{ route.network }}
+	{%- if route.gateway is defined %} via {{ route.gateway }}{%- endif %}
+	{%- if route.interface is defined %} dev {{ route.interface }}{%- endif %}
+	{%- if route.source is defined %} src {{ route.source }}{%- endif %}
+	{%- if route.metric is defined %} metric {{ route.metric }}{%- endif %}
 	{%- if
-	route_options.mtu is defined or
+	route.mtu is defined or
 	network_management_default_mtu is defined
-	%} mtu {{ route_options.mtu|default(network_management_default_mtu) }}{%- endif %}{{ "\n" }}
+	%} mtu {{ route.mtu|default(network_management_default_mtu) }}{%- endif %}
+	{%- if route.table is defined %} table {{ route.table }}{%- endif %}{{ "\n" }}
 
 	{%- endif %}
 {% endfor %}
