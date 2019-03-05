@@ -107,4 +107,5 @@
 - name: Generate nftables defines
   template:
     src: nftables_def.nft.j2
-    dest: /etc/nftables_def.nft
+    dest: "{{ network_management_nftables_definitions_path }}"
+  when: network_management_create_nftables_definitions
