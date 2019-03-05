@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+{% for hostname in hostvars %}
+
+# {{ hostname }}
+{% for interface in hostvars[hostname].interfaces %}
+define ip_{{ hostname | regex_replace('^[A-Za-z0-9]', '_') }}_{{ loop.index0 }} = {{ interface }}
+{% endfor %}
+
+{{ hostname }}: {{ hostvars[hostname].ansible_host }} {{ hostvars[hostname].interfaces }} {{ hostvars[hostname].network_management_nameservers }}
+{% endfor %}
