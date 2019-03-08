@@ -42,7 +42,7 @@ A Linux distribution with debian networking support or systemd as init system.
 | `network_management_nftables_definitions_path`   | string                                           | `/etc/nftables_def.nft`  | Path to create nftables defines                                                                                                                                     |     N    |
 
 #### network_management nftables defines
-For each interface of each host a `define ip_<hostname>_<interface number> = <ip_address(without prefix)>` definition is created. All none alphabetic and numeric characters are replaced by underscores.
+For each interface of each host a `define ip_<hostname>_<interface index>_<ip on interface index> = <ip_address(without prefix)>` definition is created. All none alphabetic and numeric characters are replaced by underscores.
 
 ### type
 Defines how a network or bridge should be configured. Possible values are:
