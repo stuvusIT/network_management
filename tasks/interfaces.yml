@@ -104,7 +104,7 @@
 
 - meta: flush_handlers
 
-- name: Generate nftables definitions```
+- name: Generate nftables definitions
   template:
     src: nftables_def.nft.j2
     dest: "{{ network_management_nftables_definitions_path }}"
