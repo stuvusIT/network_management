@@ -103,3 +103,9 @@
   when: ansible_os_family == "Debian" and not network_management_always_script
 
 - meta: flush_handlers
+
+- name: Generate nftables definitions
+  template:
+    src: nftables_def.nft.j2
+    dest: "{{ network_management_nftables_definitions_path }}"
+  when: network_management_create_nftables_definitions

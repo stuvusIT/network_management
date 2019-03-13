@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+{% for hostname in hostvars %}
+
+# {{ hostname }}
+{% for interface in hostvars[hostname].interfaces|default([]) %}
+{% set interface_index = loop.index0 %}
+{% for ip in interface.ips|default([]) %}
+define ip_{{ hostname | regex_replace('[^A-Za-z0-9]', '_') }}_{{ interface_index }}_{{ loop.index0 }} = {{ ip|ipaddr('address') }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
