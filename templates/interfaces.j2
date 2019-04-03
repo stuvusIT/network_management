@@ -51,7 +51,6 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 iface {{ interface.name }} inet {{ interface.type|default(network_management_default_type) }}
 	{% endif -%}
 	address {{ ip | ipaddr('address') }}
-	network {{ ip | ipaddr('network') }}
 	netmask {{ ip | ipaddr('netmask') }}
 {% if interface.broadcast is defined or ip | ipaddr('broadcast') != None %}
 	broadcast {{ interface.broadcast|default(ip | ipaddr('broadcast')) }}
@@ -116,7 +115,6 @@ iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_t
 iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_type) }}
 	{% endif -%}
 	address {{ ip | ipaddr('address') }}
-	network {{ ip | ipaddr('network') }}
 	netmask {{ ip | ipaddr('netmask') }}
 {% if bridge.broadcast is defined or ip | ipaddr('broadcast') != None %}
 	broadcast {{ bridge.broadcast|default(ip | ipaddr('broadcast')) }}
