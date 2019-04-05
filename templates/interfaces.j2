@@ -234,4 +234,8 @@ post-up {{ network_management_post_up }}
 pre-up sysctl -w net.ipv6.conf.default.disable_ipv6={{ network_management_disable_ipv6 | int }}
 pre-up sysctl -w net.ipv6.conf.all.disable_ipv6={{ network_management_disable_ipv6 | int }}
 {% endif %}
+{% if network_management_default_rp_filter %}
+pre-up sysctl -w net.ipv4.conf.default.rp_filter=1
+pre-up sysctl -w net.ipv4.conf.all.rp_filter=1
+{% endif %}
 post-up sysctl -w net.ipv4.ip_forward={{ network_management_ipv4_forwarding | int }}

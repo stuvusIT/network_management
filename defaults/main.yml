@@ -7,6 +7,7 @@ network_management_reboot_for_config: False
 network_management_default_dhcp_options: {}
 network_management_default_cidr: ""
 network_management_default_allow_hotplug: False
+network_management_default_rp_filter: False
 network_management_plain_run: False
 network_management_disable_ipv6: False
 network_management_ipv4_forwarding: False
