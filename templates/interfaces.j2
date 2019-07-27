@@ -61,6 +61,10 @@ iface {{ interface.name }} inet {{ interface.type|default(network_management_def
 {% endfor %}
 {% endif %}
 	dns-nameservers{% for nameserver in interface.nameservers|default(network_management_nameservers) %} {{ nameserver|ipaddr('address') }}{% endfor %}{# for loop, to allow ipaddr filter usage #}
+{% if interface.domains is defined and interface.domains or network_management_domains %}
+
+	dns-search {{ interface.domains|default(network_management_domains) | join(' ') }}
+{% endif %}
 
 
 {% endif %}{% endfor %}
@@ -125,6 +129,10 @@ iface {{ bridge.name }} inet {{ bridge.type|default(network_management_default_t
 {% endfor %}{# end: additional ips #}
 {% endif %}
 	dns-nameservers{% for nameserver in bridge.nameservers|default(network_management_nameservers) %} {{ nameserver|ipaddr('address') }}{% endfor %}{{ '\n' }}{# for loop, to allow ipaddr filter usage #}
+{% if bridge.domains is defined and bridge.domains or network_management_domains %}
+
+    dns-search {{ bridge.domains|default(network_management_domains) | join(' ') }}
+{% endif %}
 {% for port in bridge.ports | default({}) %}
 	post-down ovs-vsctl --if-exists del-port {{ bridge.name }} {{ port.port }}
 {% endfor %}
