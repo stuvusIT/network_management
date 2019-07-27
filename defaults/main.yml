@@ -17,5 +17,6 @@ network_management_nftables_definitions_path: /etc/nftables_def.nft
 network_management_nameservers:
  - 8.8.8.8
  - 8.8.4.4
+network_management_domains: []
 interfaces: []
 bridges: []
