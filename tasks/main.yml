@@ -3,7 +3,8 @@
   tags: network_management
 
 - name: Check whether IPv6 can be disabled
-  shell: sysctl --values net.ipv6.conf.default.disable_ipv6
+  stat:
+    path: /proc/sys/net/ipv6/conf/default/disable_ipv6
   register: v6support
   changed_when: False
 
