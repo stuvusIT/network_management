@@ -156,7 +156,7 @@ post-up ovs-vsctl {{''
 {% endfor %}
 {% endif %}{# end: if patch_field #}
 {% endif %}{# end: if bridges #}
-{% if network_management_default_gateway is defined or network_management_routes is defined %}{# start: routes #}
+{% if network_management_default_gateway is defined or network_management_routes is defined or network_management_tables | length > 0 %}{# start: routes #}
 
 
 ################################################################################
